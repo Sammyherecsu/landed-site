@@ -42,15 +42,19 @@ const CONFIG = {
   etaDays: "10–14 days",
 
   whatsappNumber: "2348000000000",        // your WhatsApp Business number, no +
-  paystackPublicKey: "pk_test_REPLACE_ME" // your Paystack PUBLIC key (pk_live_… when ready)
+  paystackPublicKey: "pk_test_REPLACE_ME", // your Paystack PUBLIC key (pk_live_… when ready)
+
+  // —— screenshot uploads (free Cloudinary account — see README step 6) ——
+  cloudinaryCloudName: "REPLACE_ME",      // e.g. "dxy12ab3z"
+  cloudinaryPreset: "landed_unsigned"     // the unsigned upload preset you create
 };
 
 // —— size categories. kg is what we bill on (customers never see it). ——
 const BANDS = [
   { id:"pocket", emoji:"📱", label:"Pocket-sized", kg:0.5,  hint:"phones, watches, controllers, makeup, skincare" },
-  { id:"small",  emoji:"👟", label:"Small",        kg:1.5,  hint:"shoes, clothes, handbags, tablets" },
+  { id:"small",  emoji:"👟", label:"Small",        kg:1.5,  hint:"shoes, handbags, tablets" },
   { id:"medium", emoji:"💻", label:"Medium",       kg:3,    hint:"laptops, game consoles, printers" },
-  { id:"large",  emoji:"🍳", label:"Large",        kg:6,    hint:"PS5 console, air fryers, microwaves, monitors" },
+  { id:"large",  emoji:"🍳", label:"Large",        kg:6,    hint:"air fryers, microwaves, monitors" },
   { id:"xl",     emoji:"📺", label:"Oversized",    kg:null, hint:"TVs, furniture, gym equipment", quote:true },
   { id:"unsure", emoji:"❓", label:"Not sure",      kg:1.5,  hint:"we price it as Small — refunded if it weighs less" },
 ];
@@ -116,6 +120,14 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
              font-family:'IBM Plex Mono';padding:0;}
   .err{font-family:'IBM Plex Mono';font-size:13px;color:var(--red);margin-top:10px;}
   .note-hint{font-size:11.5px;color:var(--mute);margin-top:5px;}
+  .uploader{display:flex;align-items:center;justify-content:center;gap:8px;width:100%;padding:14px;
+            border:2px dashed var(--line);border-radius:10px;background:var(--white);cursor:pointer;
+            font-size:14px;color:var(--mute);}
+  .uploader:hover{border-color:var(--green);color:var(--green);}
+  #shotPreview img{width:78px;height:78px;object-fit:cover;border-radius:8px;border:1px solid var(--line);
+                   display:block;margin-bottom:6px;}
+  .citem .shot{width:34px;height:34px;object-fit:cover;border-radius:6px;border:1px solid var(--line);
+               margin-top:5px;}
 
   /* weight bands */
   .bands{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));}
@@ -235,7 +247,7 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
     </div>
 
     <div id="detailsBlock" style="display:none;">
-      <div class="step" style="margin-top:6px;">How heavy is it?</div>
+      <div class="step" style="margin-top:6px;">Which best describes your item?</div>
       <div class="bands" id="bands"></div>
 
       <div class="row" style="margin-top:16px;align-items:flex-end;">
@@ -256,6 +268,29 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
         <label for="itemNote">Any size, colour or version we should pick?</label>
         <input id="itemNote" placeholder="e.g. size 42, black · 256GB · the blue one" />
         <div class="note-hint">This is what our shopper reads before buying. Be as specific as you like.</div>
+      </div>
+
+      <div class="field">
+        <label>Add a screenshot of the exact one (optional)</label>
+        <label for="itemShot" class="uploader" id="uploaderLabel">
+          <span id="uploadText">📷 Choose a photo or screenshot</span>
+          <input id="itemShot" type="file" accept="image/*" hidden />
+        </label>
+        <div id="shotPreview" style="display:none;margin-top:9px;">
+          <img id="shotImg" alt="Your screenshot" />
+          <button type="button" class="btn-ghost" id="shotRemove">Remove photo</button>
+        </div>
+        <div class="note-hint">Helpful when the page has several colours or versions.</div>
+      </div>
+
+      <div id="oversized" style="display:none;">
+        <div class="flag" style="background:#FFF1EF;">
+          📺 Oversized items are priced individually — freight rules and duties vary a lot.
+          Send us the link on WhatsApp and we'll come back with an exact price, usually within the hour.
+        </div>
+        <button class="btn btn-yellow" style="width:100%;margin-top:10px;" id="bigQuoteBtn">
+          Get my price on WhatsApp →
+        </button>
       </div>
 
       <button class="btn" id="quoteBtn">Show my price</button>
@@ -361,15 +396,19 @@ document.title = CONFIG.brandName + " — Shop any US store, delivered to Nigeri
 let selBand = null;
 $("bands").innerHTML = BANDS.map(b => `
   <button class="band" data-band="${b.id}">
-    <span class="bt">${b.label}</span>
+    <span class="bt">${b.emoji} ${b.label}</span>
     <span class="bh">${b.hint}</span>
-    <span class="bk">UP TO ${b.kg}KG</span>
   </button>`).join("");
 $("bands").querySelectorAll("[data-band]").forEach(btn => {
   btn.addEventListener("click", () => {
     selBand = BANDS.find(b => b.id === btn.dataset.band);
     $("bands").querySelectorAll(".band").forEach(x => x.classList.remove("sel"));
     btn.classList.add("sel");
+    // Oversized items are priced by hand — send them to WhatsApp instead
+    const big = !!selBand.quote;
+    $("oversized").style.display = big ? "block" : "none";
+    $("quoteBtn").style.display  = big ? "none"  : "inline-block";
+    if (big) $("waybill").style.display = "none";
   });
 });
 
@@ -383,6 +422,60 @@ function renderQty(){
 $("qPlus").addEventListener("click", () => { if(qty < 20){ qty++; renderQty(); } });
 $("qMinus").addEventListener("click", () => { if(qty > 1){ qty--; renderQty(); } });
 renderQty();
+
+// —— screenshot upload (Cloudinary) ——
+let itemPhoto = null;
+
+$("itemShot").addEventListener("change", async (e) => {
+  const file = e.target.files[0];
+  if (!file) return;
+  if (file.size > 10 * 1024 * 1024) {
+    $("uploadText").textContent = "⚠ That photo is over 10MB — try a smaller one";
+    return;
+  }
+  if (CONFIG.cloudinaryCloudName.includes("REPLACE_ME")) {
+    $("uploadText").textContent = "⚠ Photo uploads aren't switched on yet";
+    return;
+  }
+
+  $("uploadText").textContent = "Uploading…";
+  try {
+    const form = new FormData();
+    form.append("file", file);
+    form.append("upload_preset", CONFIG.cloudinaryPreset);
+    const r = await fetch("https://api.cloudinary.com/v1_1/" + CONFIG.cloudinaryCloudName + "/image/upload",
+                          { method:"POST", body: form });
+    const data = await r.json();
+    if (!data.secure_url) throw new Error("no url");
+    itemPhoto = data.secure_url;
+    $("shotImg").src = itemPhoto;
+    $("shotPreview").style.display = "block";
+    $("uploaderLabel").style.display = "none";
+  } catch {
+    $("uploadText").textContent = "⚠ Upload failed — try again, or send it on WhatsApp later";
+  }
+});
+
+$("shotRemove").addEventListener("click", () => {
+  itemPhoto = null;
+  $("itemShot").value = "";
+  $("shotPreview").style.display = "none";
+  $("uploaderLabel").style.display = "flex";
+  $("uploadText").textContent = "📷 Choose a photo or screenshot";
+});
+
+// —— Oversized items: hand off to WhatsApp for a manual price ——
+$("bigQuoteBtn").addEventListener("click", () => {
+  const link = $("linkInput").value.trim();
+  const note = $("itemNote").value.trim();
+  const msg = [
+    "Hi " + CONFIG.brandName + "! I'd like a price for an oversized item:",
+    link,
+    note ? "Details: " + note : "",
+    itemPhoto ? "Screenshot: " + itemPhoto : "",
+  ].filter(Boolean).join("\n");
+  window.open("https://wa.me/" + CONFIG.whatsappNumber + "?text=" + encodeURIComponent(msg), "_blank");
+});
 
 // —— store tag as they type ——
 function getHost(link){
@@ -471,7 +564,8 @@ $("quoteBtn").addEventListener("click", () => {
 
   const title = (fetched && fetched.title) ? fetched.title : "Item from " + host;
   const image = (fetched && fetched.image) ? fetched.image : null;
-  currentItem = { link, host, title, image, price, band:selBand, qty, note:$("itemNote").value.trim() };
+  currentItem = { link, host, title, image, price, band:selBand, qty,
+                  note:$("itemNote").value.trim(), photo:itemPhoto };
 
   const q = calcItem(price, selBand.kg, qty);
   $("wbStore").textContent = host.toUpperCase();
@@ -511,6 +605,12 @@ $("addBtn").addEventListener("click", () => {
   $("fetchStatus").style.display = "none";
   $("linkInput").value = ""; $("priceInput").value = ""; $("itemNote").value = "";
   $("storeTag").style.display = "none";
+  itemPhoto = null; $("itemShot").value = "";
+  $("shotPreview").style.display = "none";
+  $("uploaderLabel").style.display = "flex";
+  $("uploadText").textContent = "📷 Choose a photo or screenshot";
+  $("oversized").style.display = "none";
+  $("quoteBtn").style.display = "inline-block";
   $("bands").querySelectorAll(".band").forEach(x => x.classList.remove("sel"));
   renderCartBar();
   window.scrollTo({top: $("linkInput").offsetTop - 120, behavior:"smooth"});
@@ -563,6 +663,7 @@ function renderCheckout(){
           <span class="meta">${esc(c.host.toUpperCase())} · ${c.band.label.toUpperCase()}${c.qty>1 ? " · ×"+c.qty : ""}</span><br>
           ${esc(c.title)}
           ${c.note ? `<div class="inote">“${esc(c.note)}”</div>` : ""}
+          ${c.photo ? `<img class="shot" src="${esc(c.photo)}" alt="Your screenshot" />` : ""}
         </span>
         <span style="display:flex;gap:8px;align-items:center;white-space:nowrap;">
           <span class="mono">${fmtN(c.price*c.qty*displayRate)}</span>
@@ -666,7 +767,8 @@ function orderText(details, t, del){
     "🧾 *NEW ORDER — " + orderRef + "* (PAID ✓)","",
     "*Items:*",
     ...cart.map((c,i)=>`${i+1}. ${c.title}${c.qty>1 ? " ×"+c.qty : ""} — ${fmtUSD(c.price)} · ${c.band.label} (${c.band.kg*c.qty}kg)`
-      + (c.note ? `\n   ↳ NOTE: ${c.note}` : "") + `\n   ${c.link}`),
+      + (c.note ? `\n   ↳ NOTE: ${c.note}` : "")
+      + (c.photo ? `\n   ↳ SCREENSHOT: ${c.photo}` : "") + `\n   ${c.link}`),
     "",
     "Items: " + fmtN(t.itemsN),
     "US shipping: " + (t.usShipN===0 ? "FREE" : fmtN(t.usShipN)),
