@@ -45,13 +45,14 @@ const CONFIG = {
   paystackPublicKey: "pk_test_REPLACE_ME" // your Paystack PUBLIC key (pk_live_… when ready)
 };
 
-// —— weight bands. Billed at the ceiling, so weigh-in usually REFUNDS. ——
+// —— size categories. kg is what we bill on (customers never see it). ——
 const BANDS = [
-  { id:"xs", label:"Small & light",  kg:0.5, hint:"phone case, makeup, jewellery, watch" },
-  { id:"s",  label:"Light",          kg:1,   hint:"phone, perfume, a top, small bag" },
-  { id:"m",  label:"Medium",         kg:2,   hint:"sneakers, laptop, hair dryer" },
-  { id:"l",  label:"Heavy",          kg:4,   hint:"boots, game console, small appliance" },
-  { id:"xl", label:"Very heavy",     kg:8,   hint:"air fryer, mixer, several pairs" },
+  { id:"pocket", emoji:"📱", label:"Pocket-sized", kg:0.5,  hint:"phones, watches, controllers, makeup, skincare" },
+  { id:"small",  emoji:"👟", label:"Small",        kg:1.5,  hint:"shoes, clothes, handbags, tablets" },
+  { id:"medium", emoji:"💻", label:"Medium",       kg:3,    hint:"laptops, game consoles, printers" },
+  { id:"large",  emoji:"🍳", label:"Large",        kg:6,    hint:"PS5 console, air fryers, microwaves, monitors" },
+  { id:"xl",     emoji:"📺", label:"Oversized",    kg:null, hint:"TVs, furniture, gym equipment", quote:true },
+  { id:"unsure", emoji:"❓", label:"Not sure",      kg:1.5,  hint:"we price it as Small — refunded if it weighs less" },
 ];
 
 const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","sephora","bestbuy","fashionnova","apple","macys","zara","adidas","asos","costco","homedepot","lowes","gamestop","wayfair"];
