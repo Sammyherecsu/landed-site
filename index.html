@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Landed — Shop any US store, delivered to Nigeria. Pay in naira.</title>
+<meta name="description" content="Paste any Amazon, eBay, Walmart, Ulta or SHEIN link and see your full cost in naira — item, shipping, fees and duties in one honest number. Delivered to your door or nearest GIGL branch." />
+
+<!-- ============================================================
+  LANDED — Phase 1
+  ▸ FOUNDER: every number you'll ever change lives in the CONFIG
+    block right below. Nothing else needs touching.
+  ▸ See README.md for deployment steps.
+============================================================ -->
+
+<script>
+// ╔════════════════════════════════════════════════════════════╗
+// ║  CONFIG — EDIT YOUR NUMBERS HERE                           ║
+// ╚════════════════════════════════════════════════════════════╝
+const CONFIG = {
+  brandName: "Landed",
+
+  // —— FX (update officialRate as the market moves) ——
+  officialRate: 1360,       // today's official ₦ per $1
+  buffer: 15,               // your spread → customers see 1375
+
+  // —— fees ——
+  serviceFeePct: 4,         // % of item cost
+  dutiesPct: 5,             // customs & duties estimate, % of item cost
+  shipPerKgUSD: 12,         // international air freight, $ per kg
+  usFreeShipOver: 35,       // US store shipping assumed free at/above this $
+  usShipFlatUSD: 6.99,      // otherwise this flat estimate per item
+
+  // —— delivery options (₦) ——
+  delivery: [
+    { id:"gigl-lagos", label:"Pickup — GIGL branch, Lagos",       fee:1500, eta:"+1 day" },
+    { id:"door-lagos", label:"Door delivery — Lagos",             fee:3500, eta:"+1–2 days" },
+    { id:"gigl-state", label:"Pickup — GIGL branch, your state",  fee:3000, eta:"+2–3 days" },
+    { id:"door-state", label:"Door delivery — outside Lagos",     fee:6500, eta:"+2–4 days" },
+  ],
+
+  etaDays: "10–14 days",
+
+  whatsappNumber: "2348000000000",        // your WhatsApp Business number, no +
+  paystackPublicKey: "pk_test_REPLACE_ME" // your Paystack PUBLIC key (pk_live_… when ready)
+};
+
+// —— weight bands. Billed at the ceiling, so weigh-in usually REFUNDS. ——
+const BANDS = [
+  { id:"xs", label:"Small & light",  kg:0.5, hint:"phone case, makeup, jewellery, watch" },
+  { id:"s",  label:"Light",          kg:1,   hint:"phone, perfume, a top, small bag" },
+  { id:"m",  label:"Medium",         kg:2,   hint:"sneakers, laptop, hair dryer" },
+  { id:"l",  label:"Heavy",          kg:4,   hint:"boots, game console, small appliance" },
+  { id:"xl", label:"Very heavy",     kg:8,   hint:"air fryer, mixer, several pairs" },
+];
+
+const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","sephora","bestbuy","fashionnova","apple","macys","zara","adidas","asos","costco","homedepot","lowes","gamestop","wayfair"];
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<script src="https://js.paystack.co/v1/inline.js"></script>
+
+<style>
+  :root{--green:#0B3D2E;--green-deep:#072A20;--paper:#F5F2EA;--yellow:#FFC93C;
+        --ink:#141A17;--mute:#5E6B64;--line:#D9D4C7;--white:#fff;--save:#1E7A4F;--red:#C0392B;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;}
+  .disp{font-family:'Sora',sans-serif;} .mono{font-family:'IBM Plex Mono',monospace;}
+  button{cursor:pointer;font-family:inherit;} input,select,textarea{font-family:inherit;}
+  input::placeholder,textarea::placeholder{color:#9AA49E;}
+  :focus-visible{outline:2px solid var(--yellow);outline-offset:2px;}
+  @media (prefers-reduced-motion:reduce){*{animation:none!important;transition:none!important;}}
+  @keyframes rise{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+  @keyframes pulseDot{0%,100%{box-shadow:0 0 0 0 rgba(255,201,60,.55);}50%{box-shadow:0 0 0 8px rgba(255,201,60,0);}}
+
+  header{background:var(--green);color:var(--paper);height:60px;display:flex;align-items:center;
+         justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:50;}
+  .logo{display:flex;align-items:center;gap:10px;}
+  .logo-mark{width:26px;height:26px;background:var(--yellow);border-radius:5px;display:grid;place-items:center;
+             font-family:'Sora';font-weight:800;color:var(--green);font-size:15px;}
+  .logo-name{font-family:'Sora';font-weight:700;font-size:18px;letter-spacing:-.02em;}
+  .hdr-right{display:flex;align-items:center;gap:12px;}
+  .rate-chip{font-family:'IBM Plex Mono';font-size:12px;background:var(--green-deep);padding:6px 10px;border-radius:6px;}
+  .track-link{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;color:var(--paper);
+              background:none;border:1px solid rgba(245,242,234,.35);padding:6px 11px;border-radius:6px;}
+
+  main{max-width:960px;margin:0 auto;padding:0 20px 130px;}
+
+  .hero{padding:50px 0 6px;}
+  .hero h1{font-family:'Sora';font-weight:800;font-size:clamp(30px,5.5vw,50px);line-height:1.08;
+           letter-spacing:-.03em;color:var(--green);}
+  .hero h1 .hl{background:var(--yellow);padding:0 10px;border-radius:8px;}
+  .hero p{color:var(--mute);font-size:16px;margin-top:14px;max-width:600px;line-height:1.55;}
+  .stores{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.08em;color:var(--mute);margin-top:16px;}
+
+  .calc{background:var(--white);border-radius:16px;box-shadow:0 12px 36px rgba(11,61,46,.10);padding:24px;margin-top:28px;}
+  .step{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.16em;color:var(--mute);margin-bottom:9px;text-transform:uppercase;}
+  .field{margin-bottom:14px;}
+  .field label{display:block;font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.12em;
+               text-transform:uppercase;color:var(--mute);margin-bottom:6px;}
+  .field input,.field select,.field textarea{width:100%;padding:13px 14px;font-size:15px;border:2px solid var(--line);
+               border-radius:10px;background:var(--white);color:var(--ink);}
+  .field input:focus,.field select:focus,.field textarea:focus{border-color:var(--green);outline:none;}
+  .row{display:flex;gap:10px;flex-wrap:wrap;} .row>.field{flex:1 1 200px;}
+  .store-tag{display:inline-block;font-family:'IBM Plex Mono';font-size:10px;background:var(--yellow);
+             color:var(--green);font-weight:600;padding:3px 8px;border-radius:4px;margin-top:7px;}
+
+  .btn{font-family:'Sora';font-weight:700;font-size:15px;padding:14px 26px;border:none;border-radius:10px;
+       background:var(--green);color:var(--paper);}
+  .btn:disabled{opacity:.55;cursor:default;}
+  .btn-yellow{background:var(--yellow);color:var(--green);font-weight:800;}
+  .btn-ghost{background:none;border:none;color:var(--mute);text-decoration:underline;font-size:12px;
+             font-family:'IBM Plex Mono';padding:0;}
+  .err{font-family:'IBM Plex Mono';font-size:13px;color:var(--red);margin-top:10px;}
+  .note-hint{font-size:11.5px;color:var(--mute);margin-top:5px;}
+
+  /* weight bands */
+  .bands{display:grid;gap:8px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));}
+  .band{text-align:left;padding:11px 13px;border-radius:10px;border:2px solid var(--line);background:var(--white);}
+  .band.sel{border-color:var(--green);background:#FBFAF6;}
+  .band .bt{font-family:'Sora';font-weight:700;font-size:13.5px;color:var(--ink);}
+  .band .bh{font-size:11px;color:var(--mute);margin-top:2px;display:block;}
+  .band .bk{font-family:'IBM Plex Mono';font-size:10px;color:var(--green);letter-spacing:.06em;margin-top:4px;display:block;}
+
+  /* qty */
+  .qty{display:inline-flex;align-items:center;border:2px solid var(--line);border-radius:10px;overflow:hidden;}
+  .qty button{width:42px;height:44px;border:none;background:var(--white);font-size:19px;color:var(--green);font-weight:600;}
+  .qty button:disabled{color:var(--line);cursor:default;}
+  .qty span{min-width:44px;text-align:center;font-family:'IBM Plex Mono';font-weight:600;font-size:16px;}
+  .flag{font-family:'IBM Plex Mono';font-size:11px;color:var(--green);background:#FFF6DC;border-radius:8px;
+        padding:8px 11px;margin-top:9px;line-height:1.5;}
+
+  /* waybill */
+  .waybill{max-width:490px;margin-top:24px;animation:rise .35s ease;}
+  .wb-card{background:var(--white);border-radius:12px 12px 0 0;overflow:hidden;box-shadow:0 10px 30px rgba(11,61,46,.12);}
+  .wb-head{background:var(--green);color:var(--paper);padding:13px 20px;display:flex;justify-content:space-between;
+           align-items:center;font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.18em;}
+  .wb-body{padding:16px 20px 6px;}
+  .line{display:flex;justify-content:space-between;gap:12px;padding:9px 0;border-bottom:1px dashed var(--line);font-size:13px;}
+  .line .l{color:var(--mute);} .line .v{font-family:'IBM Plex Mono';font-weight:500;white-space:nowrap;}
+  .total-row{display:flex;justify-content:space-between;align-items:baseline;padding:16px 0 14px;}
+  .total-n{font-family:'Sora';font-weight:800;font-size:28px;color:var(--green);letter-spacing:-.02em;}
+
+  .cartbar{position:fixed;bottom:0;left:0;right:0;background:var(--green);color:var(--paper);padding:13px 20px;
+           display:none;justify-content:space-between;align-items:center;z-index:60;box-shadow:0 -6px 24px rgba(7,42,32,.35);}
+  .cartbar.on{display:flex;}
+  .cartbar .sum{font-family:'IBM Plex Mono';font-size:12.5px;}
+  .cartbar .amt{font-family:'Sora';font-weight:800;font-size:18px;color:var(--yellow);}
+
+  .overlay{position:fixed;inset:0;background:rgba(7,42,32,.55);display:none;z-index:70;overflow-y:auto;padding:24px 14px;}
+  .overlay.on{display:block;}
+  .modal{background:var(--paper);border-radius:16px;max-width:530px;margin:0 auto;padding:22px;animation:rise .3s ease;}
+  .modal h3{font-family:'Sora';font-weight:800;font-size:20px;color:var(--green);}
+  .modal .sub{font-size:13px;color:var(--mute);margin:4px 0 14px;}
+  .citem{display:flex;justify-content:space-between;gap:10px;padding:11px 0;border-bottom:1px solid var(--line);
+         font-size:13.5px;align-items:flex-start;}
+  .citem .meta{font-family:'IBM Plex Mono';font-size:10px;color:var(--mute);letter-spacing:.06em;}
+  .citem .inote{font-size:11.5px;color:var(--green);margin-top:3px;font-style:italic;}
+  .x{background:none;border:none;color:var(--red);font-size:15px;padding:4px;}
+  .opt{display:flex;justify-content:space-between;align-items:center;gap:10px;width:100%;text-align:left;
+       padding:12px 14px;border-radius:10px;border:2px solid var(--line);background:var(--white);margin-bottom:8px;font-size:13.5px;}
+  .opt.sel{border-color:var(--green);}
+  .opt .fee{font-family:'IBM Plex Mono';font-weight:600;white-space:nowrap;}
+  .promise{font-family:'IBM Plex Mono';font-size:11px;color:var(--save);background:var(--white);
+           border:1px dashed var(--save);border-radius:8px;padding:9px 12px;margin-bottom:14px;line-height:1.5;}
+
+  .how{margin-top:64px;} .how h2,.faq h2,.track h2{font-family:'Sora';font-weight:800;font-size:26px;
+       color:var(--green);letter-spacing:-.02em;margin-bottom:18px;}
+  .how-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));}
+  .how-card{background:var(--white);border-radius:12px;padding:18px;}
+  .how-card .n{font-family:'IBM Plex Mono';font-size:11px;color:var(--green);background:var(--yellow);width:24px;
+               height:24px;border-radius:6px;display:grid;place-items:center;font-weight:600;margin-bottom:10px;}
+  .how-card h4{font-family:'Sora';font-weight:700;font-size:15px;margin-bottom:5px;}
+  .how-card p{font-size:12.5px;color:var(--mute);line-height:1.5;}
+
+  .faq{margin-top:56px;}
+  details{background:var(--white);border-radius:10px;margin-bottom:8px;padding:14px 16px;}
+  summary{font-family:'Sora';font-weight:600;font-size:14px;cursor:pointer;color:var(--green);}
+  details p{font-size:13px;color:var(--mute);margin-top:8px;line-height:1.55;}
+
+  footer{margin-top:70px;border-top:1px solid var(--line);padding:18px 0 8px;font-family:'IBM Plex Mono';
+         font-size:11px;color:var(--mute);}
+
+  /* tracking */
+  .stage{display:flex;gap:14px;position:relative;padding-bottom:24px;}
+  .stage .conn{position:absolute;left:11px;top:26px;bottom:0;width:2px;background:var(--line);}
+  .stage.done .conn{background:var(--green);}
+  .dot{width:24px;height:24px;border-radius:50%;flex-shrink:0;display:grid;place-items:center;z-index:1;
+       background:var(--white);border:2px solid var(--line);font-family:'IBM Plex Mono';font-size:11px;font-weight:600;color:var(--green);}
+  .stage.done .dot{background:var(--green);border-color:var(--green);color:var(--paper);}
+  .stage.now .dot{background:var(--yellow);border-color:var(--green);animation:pulseDot 1.8s infinite;}
+  .stage .txt{padding-top:2px;} .stage.todo .txt{opacity:.45;}
+  .stage h4{font-family:'Sora';font-size:15px;font-weight:600;} .stage.now h4{font-weight:800;color:var(--green);}
+  .stage p{font-size:12.5px;color:var(--mute);margin-top:3px;}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="logo"><div class="logo-mark">₦</div><span class="logo-name" id="brandName">Landed</span></div>
+  <div class="hdr-right">
+    <div class="rate-chip">$1 = ₦<span id="rateChip"></span></div>
+    <button class="track-link" id="trackBtn">TRACK ORDER</button>
+  </div>
+</header>
+
+<main>
+  <section class="hero">
+    <h1>Shop any US store.<br>Pay in naira. Know the <span class="hl">full price</span> upfront.</h1>
+    <p>Paste a product link and see your complete cost to your door in Nigeria — item, shipping, fees and duties in one honest number. Delivered in <strong id="etaText"></strong>.</p>
+    <div class="stores">AMAZON · EBAY · WALMART · TARGET · ULTA · SHEIN · NIKE · SEPHORA · + ANY US STORE</div>
+  </section>
+
+  <!-- ————— QUOTE BUILDER ————— -->
+  <section class="calc">
+    <div class="step">Paste a link and get your price</div>
+
+    <div class="field">
+      <label for="linkInput">Product link</label>
+      <input id="linkInput" class="mono" placeholder="https://www.amazon.com/dp/…" inputmode="url" />
+      <span class="store-tag" id="storeTag" style="display:none;"></span>
+    </div>
+
+    <div class="mono" id="fetchStatus" style="display:none;font-size:12px;color:var(--mute);margin:-6px 0 12px;"></div>
+
+    <!-- price: auto-filled when we can read the page, typed when we can't -->
+    <div class="row" id="priceRow" style="display:none;">
+      <div class="field">
+        <label for="priceInput" id="priceLabel">Price on the store page (USD)</label>
+        <input id="priceInput" class="mono" type="number" min="0" step="0.01" placeholder="e.g. 189.99" inputmode="decimal" />
+      </div>
+    </div>
+
+    <div id="detailsBlock" style="display:none;">
+      <div class="step" style="margin-top:6px;">How heavy is it?</div>
+      <div class="bands" id="bands"></div>
+
+      <div class="row" style="margin-top:16px;align-items:flex-end;">
+        <div class="field" style="flex:0 0 auto;">
+          <label>How many?</label>
+          <div class="qty">
+            <button id="qMinus" aria-label="Reduce quantity">−</button>
+            <span id="qVal">1</span>
+            <button id="qPlus" aria-label="Increase quantity">+</button>
+          </div>
+        </div>
+      </div>
+      <div class="flag" id="qtyFlag" style="display:none;">
+        Buying several of the same item? Customs may treat it as commercial — we'll confirm the duty with you before purchase.
+      </div>
+
+      <div class="field" style="margin-top:14px;">
+        <label for="itemNote">Any size, colour or version we should pick?</label>
+        <input id="itemNote" placeholder="e.g. size 42, black · 256GB · the blue one" />
+        <div class="note-hint">This is what our shopper reads before buying. Be as specific as you like.</div>
+      </div>
+
+      <button class="btn" id="quoteBtn">Show my price</button>
+    </div>
+
+    <button class="btn" id="startBtn">Continue</button>
+    <div class="err" id="calcErr" style="display:none;"></div>
+
+    <!-- ————— WAYBILL ————— -->
+    <div class="waybill" id="waybill" style="display:none;">
+      <div class="wb-card">
+        <div class="wb-head"><span>YOUR PRICE · ALL IN</span><span id="wbStore"></span></div>
+        <div class="wb-body">
+          <div style="display:flex;gap:12px;align-items:flex-start;margin-bottom:12px;">
+            <img id="wbImg" alt="" style="display:none;width:60px;height:60px;object-fit:contain;
+                 border:1px solid var(--line);border-radius:8px;background:#fff;" />
+            <div>
+              <div class="disp" style="font-weight:700;font-size:15px;line-height:1.3;" id="wbTitle"></div>
+              <div class="mono" style="font-size:12px;color:var(--mute);margin-top:3px;" id="wbMeta"></div>
+              <div style="font-size:11.5px;color:var(--green);font-style:italic;margin-top:3px;" id="wbNote"></div>
+            </div>
+          </div>
+          <div id="wbLines"></div>
+          <div class="total-row">
+            <div>
+              <div class="mono" style="font-size:10px;letter-spacing:.14em;color:var(--mute);">ITEM TOTAL</div>
+              <div class="mono" style="font-size:11px;color:var(--save);font-weight:600;margin-top:3px;">
+                Add more items — everything ships together in one box</div>
+            </div>
+            <div class="total-n" id="wbTotal"></div>
+          </div>
+        </div>
+        <button class="btn btn-yellow" style="width:100%;border-radius:0;" id="addBtn">Add to order →</button>
+      </div>
+      <svg width="100%" height="12" style="display:block" aria-hidden="true">
+        <pattern id="zig" width="16" height="12" patternUnits="userSpaceOnUse"><path d="M0 0 L8 10 L16 0 Z" fill="#fff"/></pattern>
+        <rect width="100%" height="12" fill="url(#zig)"/></svg>
+      <button class="btn-ghost" id="editBtn" style="margin-top:10px;">Change price, weight or quantity</button>
+    </div>
+  </section>
+
+  <!-- ————— HOW IT WORKS ————— -->
+  <section class="how">
+    <h2>How it works</h2>
+    <div class="how-grid">
+      <div class="how-card"><div class="n">1</div><h4>Paste and pay in naira</h4>
+        <p>Any US store link. See the full price — our rate, shipping, fees, duties — then pay by transfer or card.</p></div>
+      <div class="how-card"><div class="n">2</div><h4>We buy it for you</h4>
+        <p>We purchase with our US cards and send you the store's own order confirmation as proof.</p></div>
+      <div class="how-card"><div class="n">3</div><h4>One box to Nigeria</h4>
+        <p>Items are consolidated at our US warehouse — you get a photo — then flown to Lagos with duties pre-paid.</p></div>
+      <div class="how-card"><div class="n">4</div><h4>Pickup or doorstep</h4>
+        <p>Collect at a GIGL branch anywhere in Nigeria, or have it delivered. WhatsApp updates at every step.</p></div>
+    </div>
+  </section>
+
+  <!-- ————— FAQ ————— -->
+  <section class="faq">
+    <h2>Straight answers</h2>
+    <details><summary>Why should I trust you with my money?</summary>
+      <p>Every stage comes with proof: the store's own purchase confirmation, a photo of your package in our US warehouse, the flight reference, and live WhatsApp updates. Duties are included in your price — what you see is what you pay.</p></details>
+    <details><summary>What if my item weighs less than the band I picked?</summary>
+      <p>We weigh every package at our US warehouse. Weighs less than you paid for? We refund the difference before it ships. Weighs more? We send a small top-up link. Most customers get money back.</p></details>
+    <details><summary>What can't I order?</summary>
+      <p>Nigeria Customs prohibits some items and airlines restrict others, including loose batteries and aerosols. If something in your order is restricted we'll tell you before we buy, and refund that item in full.</p></details>
+    <details><summary>Can I cancel?</summary>
+      <p>Full refund any time before we purchase from the store. After purchase, refunds follow the store's own return rules minus our service fee. Once your box leaves the US, change-of-mind refunds aren't possible — but damaged, wrong or missing items are always refunded or replaced.</p></details>
+    <details><summary>How long does it take?</summary>
+      <p><span id="etaText2"></span> door to door, counted from payment. Delivery outside Lagos adds 2–4 days. If anything shifts, we message you.</p></details>
+  </section>
+
+  <footer>© <span id="yr"></span> <span id="brandFoot">Landed</span> · Shop the US from Nigeria · Questions? WhatsApp us anytime</footer>
+</main>
+
+<!-- ————— CART BAR ————— -->
+<div class="cartbar" id="cartbar">
+  <span class="sum"><span id="cbCount"></span> · <span id="cbKg"></span>kg</span>
+  <span style="display:flex;align-items:center;gap:14px;">
+    <span class="amt" id="cbTotal"></span>
+    <button class="btn btn-yellow" id="checkoutBtn" style="padding:11px 20px;font-size:14px;">Checkout</button>
+  </span>
+</div>
+
+<div class="overlay" id="overlay"><div class="modal" id="modalBox"></div></div>
+
+<script>
+const $ = (id) => document.getElementById(id);
+const fmtN = (n) => "₦" + Math.round(n).toLocaleString("en-NG");
+const fmtUSD = (n) => "$" + Number(n).toLocaleString("en-US",{minimumFractionDigits:2,maximumFractionDigits:2});
+const esc = (s) => String(s||"").replace(/[&<>"']/g, c => ({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[c]));
+const displayRate = CONFIG.officialRate + CONFIG.buffer;
+
+// —— boot ——
+$("rateChip").textContent = displayRate.toLocaleString();
+$("etaText").textContent = CONFIG.etaDays;
+$("etaText2").textContent = CONFIG.etaDays;
+$("yr").textContent = new Date().getFullYear();
+$("brandName").textContent = CONFIG.brandName;
+$("brandFoot").textContent = CONFIG.brandName;
+document.title = CONFIG.brandName + " — Shop any US store, delivered to Nigeria. Pay in naira.";
+
+// —— render weight bands ——
+let selBand = null;
+$("bands").innerHTML = BANDS.map(b => `
+  <button class="band" data-band="${b.id}">
+    <span class="bt">${b.label}</span>
+    <span class="bh">${b.hint}</span>
+    <span class="bk">UP TO ${b.kg}KG</span>
+  </button>`).join("");
+$("bands").querySelectorAll("[data-band]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    selBand = BANDS.find(b => b.id === btn.dataset.band);
+    $("bands").querySelectorAll(".band").forEach(x => x.classList.remove("sel"));
+    btn.classList.add("sel");
+  });
+});
+
+// —— quantity ——
+let qty = 1;
+function renderQty(){
+  $("qVal").textContent = qty;
+  $("qMinus").disabled = qty <= 1;
+  $("qtyFlag").style.display = qty >= 3 ? "block" : "none";
+}
+$("qPlus").addEventListener("click", () => { if(qty < 20){ qty++; renderQty(); } });
+$("qMinus").addEventListener("click", () => { if(qty > 1){ qty--; renderQty(); } });
+renderQty();
+
+// —— store tag as they type ——
+function getHost(link){
+  try { return new URL(link.startsWith("http") ? link : "https://" + link).hostname.replace(/^www\./,""); }
+  catch { return null; }
+}
+$("linkInput").addEventListener("input", () => {
+  const host = getHost($("linkInput").value.trim());
+  const tag = $("storeTag");
+  if(!host || !host.includes(".")){ tag.style.display = "none"; return; }
+  const known = KNOWN_STORES.find(k => host.includes(k));
+  tag.style.display = "inline-block";
+  tag.textContent = known ? "✓ " + known.toUpperCase() : host;
+});
+
+// —— step 1: read the page (or ask for the price) ——
+let fetched = null;
+
+$("startBtn").addEventListener("click", async () => {
+  const err = $("calcErr"), status = $("fetchStatus");
+  err.style.display = "none";
+  const link = $("linkInput").value.trim();
+  const host = getHost(link);
+  if(!link || !host || !host.includes(".")){
+    err.textContent = "⚠ Paste the full product link first."; err.style.display = "block"; return;
+  }
+
+  $("startBtn").disabled = true;
+  status.style.display = "block";
+  status.textContent = "Reading the product page…";
+
+  let data = null;
+  try {
+    const full = link.startsWith("http") ? link : "https://" + link;
+    const r = await fetch("/api/quote?url=" + encodeURIComponent(full));
+    data = await r.json();
+  } catch { data = { ok:false }; }
+
+  $("startBtn").disabled = false;
+  status.style.display = "none";
+  $("startBtn").style.display = "none";
+  $("priceRow").style.display = "flex";
+  $("detailsBlock").style.display = "block";
+
+  if(data && data.ok){
+    fetched = data;
+    $("priceInput").value = data.price;
+    $("priceLabel").textContent = "Price we found (edit if it's wrong)";
+    status.style.display = "block";
+    status.textContent = "✓ Found: " + (data.title || "").slice(0,60);
+  } else {
+    fetched = null;
+    $("priceLabel").textContent = "Price on the store page (USD)";
+    $("priceInput").focus();
+  }
+  $("detailsBlock").scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+
+// —— pricing maths ——
+function calcItem(price, bandKg, quantity){
+  const lineUSD = price * quantity;
+  const kg = bandKg * quantity;
+  const usShipUSD = price >= CONFIG.usFreeShipOver ? 0 : CONFIG.usShipFlatUSD * quantity;
+  const itemN    = lineUSD * displayRate;
+  const usShipN  = usShipUSD * displayRate;
+  const intlN    = kg * CONFIG.shipPerKgUSD * displayRate;
+  const serviceN = itemN * CONFIG.serviceFeePct / 100;
+  const dutiesN  = itemN * CONFIG.dutiesPct / 100;
+  return { kg, usShipUSD, itemN, usShipN, intlN, serviceN, dutiesN,
+           total: itemN + usShipN + intlN + serviceN + dutiesN };
+}
+
+let currentItem = null;
+let cart = [];
+
+$("quoteBtn").addEventListener("click", () => {
+  const err = $("calcErr");
+  const link = $("linkInput").value.trim();
+  const host = getHost(link) || "store";
+  const price = parseFloat($("priceInput").value);
+  if(isNaN(price) || price <= 0){
+    err.textContent = "⚠ Enter the item's price in USD — you'll find it on the store page."; err.style.display="block"; return;
+  }
+  if(!selBand){ err.textContent = "⚠ Pick how heavy the item is."; err.style.display="block"; return; }
+  err.style.display = "none";
+
+  const title = (fetched && fetched.title) ? fetched.title : "Item from " + host;
+  const image = (fetched && fetched.image) ? fetched.image : null;
+  currentItem = { link, host, title, image, price, band:selBand, qty, note:$("itemNote").value.trim() };
+
+  const q = calcItem(price, selBand.kg, qty);
+  $("wbStore").textContent = host.toUpperCase();
+  $("wbTitle").textContent = title;
+  $("wbMeta").textContent = fmtUSD(price) + (qty>1 ? " × " + qty : "") + " · " + selBand.label.toLowerCase() + " · " + q.kg + "kg";
+  $("wbNote").textContent = currentItem.note ? "“" + currentItem.note + "”" : "";
+  const img = $("wbImg");
+  if(image){ img.src = image; img.style.display="block"; img.onerror = () => img.style.display="none"; }
+  else img.style.display = "none";
+
+  $("wbLines").innerHTML = [
+    ["Item" + (qty>1 ? "s — " + fmtUSD(price) + " × " + qty : " — " + fmtUSD(price)) + " × ₦" + displayRate.toLocaleString(), fmtN(q.itemN)],
+    ["US shipping to our warehouse" + (q.usShipUSD===0 ? " — FREE" : ""), q.usShipUSD===0 ? "₦0" : fmtN(q.usShipN)],
+    ["Shipping to Nigeria — " + q.kg + "kg", fmtN(q.intlN)],
+    ["Service fee — " + CONFIG.serviceFeePct + "%", fmtN(q.serviceN)],
+    ["Customs & duties — " + CONFIG.dutiesPct + "%", fmtN(q.dutiesN)],
+  ].map(([l,v]) => `<div class="line"><span class="l">${esc(l)}</span><span class="v">${v}</span></div>`).join("");
+  $("wbTotal").textContent = fmtN(q.total);
+  $("waybill").style.display = "block";
+  $("waybill").scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+
+$("editBtn").addEventListener("click", () => {
+  $("waybill").style.display = "none";
+  $("detailsBlock").scrollIntoView({behavior:"smooth", block:"nearest"});
+});
+
+// —— cart ——
+$("addBtn").addEventListener("click", () => {
+  if(!currentItem) return;
+  cart.push(currentItem);
+  currentItem = null; fetched = null; selBand = null; qty = 1; renderQty();
+  $("waybill").style.display = "none";
+  $("detailsBlock").style.display = "none";
+  $("priceRow").style.display = "none";
+  $("startBtn").style.display = "inline-block";
+  $("fetchStatus").style.display = "none";
+  $("linkInput").value = ""; $("priceInput").value = ""; $("itemNote").value = "";
+  $("storeTag").style.display = "none";
+  $("bands").querySelectorAll(".band").forEach(x => x.classList.remove("sel"));
+  renderCartBar();
+  window.scrollTo({top: $("linkInput").offsetTop - 120, behavior:"smooth"});
+  $("linkInput").focus();
+});
+
+function orderTotals(deliveryFee){
+  let itemsN=0, usShipN=0, totalKg=0;
+  cart.forEach(c => {
+    const q = calcItem(c.price, c.band.kg, c.qty);
+    itemsN += q.itemN; usShipN += q.usShipN; totalKg += q.kg;
+  });
+  const intlN = totalKg * CONFIG.shipPerKgUSD * displayRate;
+  const serviceN = itemsN * CONFIG.serviceFeePct/100;
+  const dutiesN  = itemsN * CONFIG.dutiesPct/100;
+  const total = itemsN + usShipN + intlN + serviceN + dutiesN + (deliveryFee||0);
+  return { itemsN, usShipN, totalKg, intlN, serviceN, dutiesN, total };
+}
+
+function renderCartBar(){
+  const bar = $("cartbar");
+  if(cart.length === 0){ bar.classList.remove("on"); return; }
+  const t = orderTotals(0);
+  const units = cart.reduce((s,c)=>s+c.qty,0);
+  $("cbCount").textContent = units + " item" + (units>1?"s":"");
+  $("cbKg").textContent = t.totalKg.toFixed(1);
+  $("cbTotal").textContent = fmtN(t.total) + " + delivery";
+  bar.classList.add("on");
+}
+
+// —— checkout ——
+let selDelivery = CONFIG.delivery[0].id;
+let orderRef = null;
+
+function openModal(fn){ $("overlay").classList.add("on"); fn(); }
+function closeModal(){ $("overlay").classList.remove("on"); }
+$("overlay").addEventListener("click", e => { if(e.target === $("overlay")) closeModal(); });
+$("checkoutBtn").addEventListener("click", () => openModal(renderCheckout));
+
+function renderCheckout(){
+  const del = CONFIG.delivery.find(d => d.id === selDelivery);
+  const t = orderTotals(del.fee);
+  $("modalBox").innerHTML = `
+    <h3>Your order</h3>
+    <div class="sub">One box · ${t.totalKg.toFixed(1)}kg · arrives in ${CONFIG.etaDays}</div>
+    <div class="promise">⚖️ We weigh your package at our US warehouse. Lighter than you paid for? We refund the difference before it ships.</div>
+    ${cart.map((c,i)=>`
+      <div class="citem">
+        <span>
+          <span class="meta">${esc(c.host.toUpperCase())} · ${c.band.label.toUpperCase()}${c.qty>1 ? " · ×"+c.qty : ""}</span><br>
+          ${esc(c.title)}
+          ${c.note ? `<div class="inote">“${esc(c.note)}”</div>` : ""}
+        </span>
+        <span style="display:flex;gap:8px;align-items:center;white-space:nowrap;">
+          <span class="mono">${fmtN(c.price*c.qty*displayRate)}</span>
+          <button class="x" data-i="${i}" aria-label="Remove item">✕</button>
+        </span>
+      </div>`).join("")}
+    <div style="margin-top:12px;">
+      ${[["Items", fmtN(t.itemsN)],
+         ["US shipping", t.usShipN===0 ? "FREE" : fmtN(t.usShipN)],
+         ["Shipping to Nigeria — "+t.totalKg.toFixed(1)+"kg", fmtN(t.intlN)],
+         ["Service fee — "+CONFIG.serviceFeePct+"%", fmtN(t.serviceN)],
+         ["Customs & duties", fmtN(t.dutiesN)],
+        ].map(([l,v])=>`<div class="line"><span class="l">${l}</span><span class="v">${v}</span></div>`).join("")}
+    </div>
+
+    <div class="step" style="margin:16px 0 8px;">How should we get it to you?</div>
+    ${CONFIG.delivery.map(d=>`
+      <button class="opt ${d.id===selDelivery?"sel":""}" data-del="${d.id}">
+        <span>${d.label}<br><span class="mono" style="font-size:10px;color:var(--mute);">${d.eta}</span></span>
+        <span class="fee">${fmtN(d.fee)}</span>
+      </button>`).join("")}
+
+    <div class="step" style="margin:16px 0 8px;">Your details</div>
+    <div class="row">
+      <div class="field"><label>Full name</label><input id="fName" autocomplete="name" placeholder="Chioma Okafor"/></div>
+      <div class="field"><label>WhatsApp number</label><input id="fPhone" class="mono" inputmode="tel" autocomplete="tel" placeholder="0803 000 0000"/></div>
+    </div>
+    <div class="row">
+      <div class="field"><label>Email (for your receipt)</label><input id="fEmail" class="mono" type="email" autocomplete="email" placeholder="you@email.com"/></div>
+      <div class="field"><label>Delivery address or state</label><input id="fAddr" placeholder="e.g. 12 Okpara Ave, Enugu"/></div>
+    </div>
+    <div class="field">
+      <label>Anything else we should know? (optional)</label>
+      <textarea id="fNote" rows="2" placeholder="e.g. it's a gift — no receipt in the box · call before delivery"></textarea>
+    </div>
+
+    <div class="total-row" style="border-top:2px solid var(--green);padding-top:14px;">
+      <span class="disp" style="font-weight:700;">Total to pay</span>
+      <span class="total-n">${fmtN(t.total)}</span>
+    </div>
+
+    <button class="btn btn-yellow" style="width:100%;" id="payBtn">Pay ${fmtN(t.total)}</button>
+    <div class="mono" style="font-size:11px;color:var(--mute);text-align:center;margin-top:9px;">
+      Card, bank transfer or USSD · secured by Paystack
+    </div>
+    <div class="err" id="coErr" style="display:none;"></div>
+    <button class="btn-ghost" id="keepBtn" style="margin-top:14px;">← Keep shopping</button>
+  `;
+  $("modalBox").querySelectorAll(".x").forEach(b => b.addEventListener("click", () => {
+    cart.splice(+b.dataset.i,1); renderCartBar(); cart.length ? renderCheckout() : closeModal();
+  }));
+  $("modalBox").querySelectorAll("[data-del]").forEach(b => b.addEventListener("click", () => {
+    selDelivery = b.dataset.del; renderCheckout();
+  }));
+  $("keepBtn").addEventListener("click", closeModal);
+  $("payBtn").addEventListener("click", pay);
+}
+
+function newRef(){ return "LND-" + Date.now().toString(36).toUpperCase().slice(-6); }
+
+function pay(){
+  const name=$("fName").value.trim(), phone=$("fPhone").value.trim(),
+        email=$("fEmail").value.trim(), addr=$("fAddr").value.trim(), note=$("fNote").value.trim();
+  const err = $("coErr");
+  if(!name || !phone || !email || !addr){
+    err.textContent = "⚠ We need your name, WhatsApp number, email and delivery address."; err.style.display="block"; return;
+  }
+  err.style.display = "none";
+
+  const del = CONFIG.delivery.find(d => d.id === selDelivery);
+  const t = orderTotals(del.fee);
+  orderRef = newRef();
+  const details = { name, phone, email, addr, note };
+
+  if(!window.PaystackPop || CONFIG.paystackPublicKey.includes("REPLACE_ME")){
+    err.innerHTML = "⚠ Payments switch on once your Paystack key is added in CONFIG.";
+    err.style.display = "block"; return;
+  }
+
+  const handler = PaystackPop.setup({
+    key: CONFIG.paystackPublicKey,
+    email: email,
+    amount: Math.round(t.total * 100),   // kobo
+    currency: "NGN",
+    ref: orderRef,
+    metadata: {
+      custom_fields: [
+        { display_name:"Order",    variable_name:"order_ref", value: orderRef },
+        { display_name:"Customer", variable_name:"customer",  value: name + " · " + phone },
+        { display_name:"Deliver",  variable_name:"deliver",   value: del.label + " → " + addr },
+      ]
+    },
+    callback: function(){ renderSuccess(details, t, del); },
+    onClose: function(){ /* closed without paying — order not placed */ }
+  });
+  handler.openIframe();
+}
+
+function orderText(details, t, del){
+  return [
+    "🧾 *NEW ORDER — " + orderRef + "* (PAID ✓)","",
+    "*Items:*",
+    ...cart.map((c,i)=>`${i+1}. ${c.title}${c.qty>1 ? " ×"+c.qty : ""} — ${fmtUSD(c.price)} · ${c.band.label} (${c.band.kg*c.qty}kg)`
+      + (c.note ? `\n   ↳ NOTE: ${c.note}` : "") + `\n   ${c.link}`),
+    "",
+    "Items: " + fmtN(t.itemsN),
+    "US shipping: " + (t.usShipN===0 ? "FREE" : fmtN(t.usShipN)),
+    "Shipping to NG (" + t.totalKg.toFixed(1) + "kg): " + fmtN(t.intlN),
+    "Service fee: " + fmtN(t.serviceN),
+    "Duties: " + fmtN(t.dutiesN),
+    "Delivery: " + del.label + " — " + fmtN(del.fee),
+    "*TOTAL PAID: " + fmtN(t.total) + "*","",
+    "*" + details.name + "* · " + details.phone,
+    details.email,
+    details.addr,
+    details.note ? "Order note: " + details.note : "",
+  ].filter(Boolean).join("\n");
+}
+
+function renderSuccess(details, t, del){
+  const msg = orderText(details, t, del);
+  $("modalBox").innerHTML = `
+    <h3>Payment confirmed 🎉</h3>
+    <div class="sub">Order <strong class="mono">${orderRef}</strong> — we're buying your items now.</div>
+    <div class="promise" style="color:var(--green);border-color:var(--green);">
+      📌 Save your order number: <strong class="mono">${orderRef}</strong><br>Track it any time from the top of our site.
+    </div>
+    <div class="line"><span class="l">Total paid</span><span class="v">${fmtN(t.total)}</span></div>
+    <div class="line"><span class="l">Delivery</span><span class="v">${del.label}</span></div>
+    <div class="line"><span class="l">Updates on WhatsApp</span><span class="v">${esc(details.phone)}</span></div>
+    <p style="font-size:13px;color:var(--mute);margin-top:14px;line-height:1.55;">
+      We'll message you at every step: purchase proof, a photo of your package in our US warehouse, the flight to Lagos, customs, then delivery.</p>
+    <button class="btn btn-yellow" style="width:100%;margin-top:14px;" id="waBtn">Send my order details on WhatsApp →</button>
+    <button class="btn" style="width:100%;margin-top:10px;" id="doneBtn">Done</button>
+  `;
+  $("waBtn").addEventListener("click", () => {
+    window.open("https://wa.me/" + CONFIG.whatsappNumber + "?text=" + encodeURIComponent(msg), "_blank");
+  });
+  $("doneBtn").addEventListener("click", () => { cart=[]; renderCartBar(); closeModal(); });
+}
+
+// ————— TRACKING —————
+const STAGES = [
+  ["Order placed", "Payment received — thank you"],
+  ["Bought from the store", "Purchased with our US card, confirmation sent to you"],
+  ["On its way to our US warehouse", "Store's courier has it"],
+  ["At our US warehouse", "Received, weighed and photographed for you"],
+  ["Flying to Nigeria", "Packed into one box and on a plane to Lagos"],
+  ["Clearing customs", "With our agents in Lagos — duties already paid"],
+  ["In Nigeria", "Cleared and heading to your delivery option"],
+  ["Ready for you", "Out for delivery or waiting at your GIGL branch"],
+  ["Delivered", "Enjoy! 💚"],
+];
+
+$("trackBtn").addEventListener("click", () => openModal(renderTrackForm));
+
+function renderTrackForm(msg){
+  $("modalBox").innerHTML = `
+    <h3>Track your order</h3>
+    <div class="sub">Enter the order number we gave you at checkout.</div>
+    <div class="field"><label>Order number</label>
+      <input id="tRef" class="mono" placeholder="LND-XXXXXX" style="text-transform:uppercase;"/></div>
+    ${msg ? `<div class="err" style="display:block;">${msg}</div>` : ""}
+    <button class="btn btn-yellow" style="width:100%;margin-top:6px;" id="tGo">Show my order</button>
+    <button class="btn-ghost" style="margin-top:14px;" id="tClose">← Close</button>
+  `;
+  $("tGo").addEventListener("click", doTrack);
+  $("tRef").addEventListener("keydown", e => { if(e.key==="Enter") doTrack(); });
+  $("tClose").addEventListener("click", closeModal);
+}
+
+async function doTrack(){
+  const ref = $("tRef").value.trim().toUpperCase();
+  if(!ref){ return renderTrackForm("⚠ Enter your order number."); }
+  $("tGo").disabled = true; $("tGo").textContent = "Looking…";
+  let data = null;
+  try {
+    const r = await fetch("/api/track?ref=" + encodeURIComponent(ref));
+    data = await r.json();
+  } catch { data = null; }
+  if(!data || !data.ok){
+    return renderTrackForm("⚠ We couldn't find " + esc(ref) + ". Check the number, or message us on WhatsApp and we'll look it up.");
+  }
+  renderTrack(ref, data);
+}
+
+function renderTrack(ref, data){
+  const i = Math.max(0, Math.min(STAGES.length-1, (data.stage|0)));
+  $("modalBox").innerHTML = `
+    <h3>Order ${esc(ref)}</h3>
+    <div class="sub">${esc(data.summary || "")}${data.eta ? " · arriving " + esc(data.eta) : ""}</div>
+    <div style="margin-top:16px;">
+      ${STAGES.map(([t,d],n)=>{
+        const cls = n < i ? "done" : n === i ? "now" : "todo";
+        return `<div class="stage ${cls}">
+          ${n < STAGES.length-1 ? '<div class="conn"></div>' : ''}
+          <div class="dot">${n < i ? "✓" : n+1}</div>
+          <div class="txt"><h4>${t}${n===i ? ' <span class="mono" style="font-size:9px;background:var(--yellow);color:var(--green);padding:2px 7px;border-radius:4px;letter-spacing:.1em;vertical-align:middle;">NOW</span>' : ''}</h4>
+          <p>${n===i && data.note ? esc(data.note) : d}</p></div>
+        </div>`;
+      }).join("")}
+    </div>
+    <button class="btn" style="width:100%;margin-top:8px;" id="tBack">Track another order</button>
+    <button class="btn-ghost" style="margin-top:14px;" id="tClose2">← Close</button>
+  `;
+  $("tBack").addEventListener("click", () => renderTrackForm());
+  $("tClose2").addEventListener("click", closeModal);
+}
+</script>
+</body>
+</html>
