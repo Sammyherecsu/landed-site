@@ -98,7 +98,10 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
            letter-spacing:-.03em;color:var(--green);}
   .hero h1 .hl{background:var(--yellow);padding:0 10px;border-radius:8px;}
   .hero p{color:var(--mute);font-size:16px;margin-top:14px;max-width:600px;line-height:1.55;}
-  .stores{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.08em;color:var(--mute);margin-top:16px;}
+ .stores{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .pill{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.04em;color:var(--green);
+        background:var(--white);border:1px solid var(--line);border-radius:999px;padding:6px 12px;}
+  .pill-any{background:var(--yellow);border-color:var(--yellow);font-weight:600;}
 
   .calc{background:var(--white);border-radius:16px;box-shadow:0 12px 36px rgba(11,61,46,.10);padding:24px;margin-top:28px;}
   .step{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.16em;color:var(--mute);margin-bottom:9px;text-transform:uppercase;}
@@ -212,7 +215,7 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
 <body>
 
 <header>
-  <div class="logo"><div class="logo-mark">₦</div><span class="logo-name" id="brandName">Landed</span></div>
+  <div class="logo"><div class="logo-mark">₦</div><span class="logo-name" id="brandName">Landed</span><span style="font-size:13px;letter-spacing:.06em;opacity:.85;margin-left:6px;">🇺🇸 → 🇳🇬</span></div>
   <div class="hdr-right">
     <div class="rate-chip">$1 = ₦<span id="rateChip"></span></div>
     <button class="track-link" id="trackBtn">TRACK ORDER</button>
@@ -223,7 +226,9 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
   <section class="hero">
     <h1>Shop any US store.<br>Pay in naira. Know the <span class="hl">full price</span> upfront.</h1>
     <p>Paste a product link and see your complete cost to your door in Nigeria — item, shipping, fees and duties in one honest number. Delivered in <strong id="etaText"></strong>.</p>
-    <div class="stores">AMAZON · EBAY · WALMART · TARGET · ULTA · SHEIN · NIKE · SEPHORA · + ANY US STORE</div>
+   <div class="stores">
+      <span class="pill">Amazon</span><span class="pill">eBay</span><span class="pill">Walmart</span><span class="pill">Target</span><span class="pill">Ulta</span><span class="pill">Sephora</span><span class="pill">SHEIN</span><span class="pill">Nike</span><span class="pill pill-any">+ any US store</span>
+    </div>
   </section>
 
   <!-- ————— QUOTE BUILDER ————— -->
