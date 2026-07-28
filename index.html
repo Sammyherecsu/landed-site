@@ -99,6 +99,11 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
   .hero h1 .hl{background:var(--yellow);padding:0 10px;border-radius:8px;}
   .hero p{color:var(--mute);font-size:16px;margin-top:14px;max-width:600px;line-height:1.55;}
  .stores{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
+  .pill{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono';font-size:11px;
+        letter-spacing:.04em;color:var(--green);background:var(--white);border:1px solid var(--line);
+        border-radius:999px;padding:6px 12px;}
+  .pill img{width:13px;height:13px;object-fit:contain;}
+  .pill-any{background:var(--yellow);border-color:var(--yellow);font-weight:600;}
   .pill{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.04em;color:var(--green);
         background:var(--white);border:1px solid var(--line);border-radius:999px;padding:6px 12px;}
   .pill-any{background:var(--yellow);border-color:var(--yellow);font-weight:600;}
@@ -223,11 +228,16 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
 </header>
 
 <main>
-  <section class="hero">
-    <h1>Shop any US store.<br>Pay in naira. Know the <span class="hl">full price</span> upfront.</h1>
-    <p>Paste a product link and see your complete cost to your door in Nigeria — item, shipping, fees and duties in one honest number. Delivered in <strong id="etaText"></strong>.</p>
-   <div class="stores">
-      <span class="pill">Amazon</span><span class="pill">eBay</span><span class="pill">Walmart</span><span class="pill">Target</span><span class="pill">Ulta</span><span class="pill">Sephora</span><span class="pill">SHEIN</span><span class="pill">Nike</span><span class="pill pill-any">+ any US store</span>
+  <div class="stores">
+      <span class="pill"><img src="https://cdn.simpleicons.org/amazon/0B3D2E" alt="" />Amazon</span>
+      <span class="pill"><img src="https://cdn.simpleicons.org/ebay/0B3D2E" alt="" />eBay</span>
+      <span class="pill"><img src="https://cdn.simpleicons.org/walmart/0B3D2E" alt="" />Walmart</span>
+      <span class="pill"><img src="https://cdn.simpleicons.org/target/0B3D2E" alt="" />Target</span>
+      <span class="pill"><img src="https://cdn.simpleicons.org/ulta/0B3D2E" alt="" />Ulta</span>
+      <span class="pill"><img src="https://cdn.simpleicons.org/sephora/0B3D2E" alt="" />Sephora</span>
+      <span class="pill"><img src="https://cdn.simpleicons.org/shein/0B3D2E" alt="" />SHEIN</span>
+      <span class="pill"><img src="https://cdn.simpleicons.org/nike/0B3D2E" alt="" />Nike</span>
+      <span class="pill pill-any">+ any US store</span>
     </div>
   </section>
 
