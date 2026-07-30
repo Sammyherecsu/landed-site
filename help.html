@@ -1,0 +1,497 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Help Center — Glavand</title>
+<meta name="description" content="Everything you need to know about shopping with Glavand — placing an order, pricing, shipping to Nigeria, delivery, returns and support." />
+
+<script>
+// ── keep these matching your homepage CONFIG ──
+const HELP = {
+  brandName: "Glavand",
+  whatsappNumber: "2348000000000",   // no + sign
+  email: "support@glavand.com",
+  etaExpress: "7–14 business days",
+  etaStandard: "10–20 business days",
+};
+</script>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+
+<style>
+  :root{--green:#0B3D2E;--green-deep:#072A20;--paper:#F5F2EA;--yellow:#FFC93C;
+        --ink:#141A17;--mute:#5E6B64;--line:#D9D4C7;--white:#fff;--save:#1E7A4F;}
+  *{margin:0;padding:0;box-sizing:border-box;}
+  body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;}
+  .mono{font-family:'IBM Plex Mono',monospace;}
+  a{color:var(--green);}
+  button{cursor:pointer;font-family:inherit;}
+  :focus-visible{outline:2px solid var(--yellow);outline-offset:2px;}
+
+  header{background:var(--green);color:var(--paper);height:60px;display:flex;align-items:center;
+         justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:50;}
+  .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--paper);}
+  .logo-mark{width:26px;height:26px;background:var(--yellow);border-radius:5px;display:grid;
+             place-items:center;font-family:'Sora';font-weight:800;color:var(--green);font-size:15px;}
+  .logo-name{font-family:'Sora';font-weight:700;font-size:18px;letter-spacing:-.02em;}
+  .back{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;color:var(--paper);
+        background:none;border:1px solid rgba(245,242,234,.35);padding:7px 12px;border-radius:6px;text-decoration:none;}
+
+  main{max-width:800px;margin:0 auto;padding:44px 20px 90px;}
+  h1{font-family:'Sora';font-weight:800;font-size:clamp(28px,5vw,42px);letter-spacing:-.03em;
+     color:var(--green);line-height:1.1;}
+  .lede{color:var(--mute);font-size:16px;margin-top:12px;line-height:1.55;max-width:620px;}
+
+  .searchwrap{margin:26px 0 10px;position:relative;}
+  #q{width:100%;padding:15px 16px 15px 44px;font-size:15px;border:2px solid var(--green);
+     border-radius:12px;background:var(--white);color:var(--ink);font-family:inherit;}
+  #q::placeholder{color:#9AA49E;}
+  .searchwrap .ico{position:absolute;left:15px;top:50%;transform:translateY(-50%);font-size:16px;opacity:.5;}
+  #count{font-family:'IBM Plex Mono';font-size:11.5px;color:var(--mute);min-height:18px;margin-bottom:18px;}
+
+  .jump{display:flex;flex-wrap:wrap;gap:7px;margin-bottom:34px;}
+  .jump a{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.04em;background:var(--white);
+          border:1px solid var(--line);border-radius:999px;padding:6px 12px;text-decoration:none;}
+  .jump a:hover{border-color:var(--green);}
+
+  section{margin-bottom:38px;scroll-margin-top:76px;}
+  section h2{font-family:'Sora';font-weight:800;font-size:21px;color:var(--green);
+             letter-spacing:-.02em;margin-bottom:14px;}
+  details{background:var(--white);border:1px solid var(--line);border-radius:10px;
+          margin-bottom:8px;overflow:hidden;}
+  summary{font-family:'Sora';font-weight:600;font-size:14.5px;color:var(--ink);
+          padding:15px 17px;cursor:pointer;list-style:none;display:flex;
+          justify-content:space-between;align-items:center;gap:12px;}
+  summary::-webkit-details-marker{display:none;}
+  summary::after{content:"+";font-family:'IBM Plex Mono';font-size:17px;color:var(--green);flex-shrink:0;}
+  details[open] summary::after{content:"−";}
+  details[open] summary{color:var(--green);}
+  .a{padding:0 17px 16px;font-size:14px;color:var(--mute);line-height:1.62;}
+  .a p+p{margin-top:9px;}
+  .a ul{margin:9px 0 0 18px;}
+  .a li{margin-bottom:5px;}
+  .a strong{color:var(--ink);}
+
+  .promise{background:#F2FAF6;border:1px dashed var(--save);border-radius:10px;
+           padding:12px 15px;font-size:13.5px;color:var(--save);line-height:1.55;margin:14px 0 8px;}
+
+  .cta{font-size:12.5px;color:var(--mute);margin-top:12px;}
+  .cta a{font-weight:600;}
+
+  .contact{background:var(--green);color:var(--paper);border-radius:14px;padding:26px;margin-top:46px;}
+  .contact h3{font-family:'Sora';font-weight:800;font-size:20px;margin-bottom:6px;}
+  .contact p{font-size:14px;opacity:.82;line-height:1.55;}
+  .btns{display:flex;flex-wrap:wrap;gap:9px;margin-top:16px;}
+  .btns a{font-family:'Sora';font-weight:700;font-size:14px;padding:12px 20px;border-radius:9px;
+          text-decoration:none;}
+  .b1{background:var(--yellow);color:var(--green);}
+  .b2{background:rgba(245,242,234,.14);color:var(--paper);border:1px solid rgba(245,242,234,.3);}
+
+  footer{margin-top:52px;border-top:1px solid var(--line);padding-top:16px;
+         font-family:'IBM Plex Mono';font-size:11px;color:var(--mute);}
+  .nores{display:none;font-size:14px;color:var(--mute);padding:16px 0;}
+</style>
+</head>
+<body>
+
+<header>
+  <a class="logo" href="/">
+    <div class="logo-mark">₦</div>
+    <span class="logo-name" id="bn">Glavand</span>
+  </a>
+  <a class="back" href="/">← BACK TO SHOP</a>
+</header>
+
+<main>
+  <h1>Help Center</h1>
+  <p class="lede">Everything you need to know about shopping with <span class="bn2">Glavand</span> — from placing an order to delivery, returns and support.</p>
+
+  <div class="searchwrap">
+    <span class="ico">🔍</span>
+    <input id="q" type="search" placeholder="Search for answers…" autocomplete="off" />
+  </div>
+  <div id="count"></div>
+
+  <nav class="jump" id="jump">
+    <a href="#ordering">Ordering</a>
+    <a href="#pricing">Pricing &amp; Payments</a>
+    <a href="#shipping">Shipping &amp; Delivery</a>
+    <a href="#returns">Returns &amp; Refunds</a>
+    <a href="#support">Account &amp; Support</a>
+  </nav>
+
+  <p class="nores" id="nores">No answers matched that. Try a different word, or <a href="#contact">message our team</a> — we reply on WhatsApp.</p>
+
+  <!-- ══════════ ORDERING ══════════ -->
+  <section id="ordering">
+    <h2>Ordering</h2>
+
+    <details>
+      <summary>How does Glavand work?</summary>
+      <div class="a">
+        <p>Four steps, and you can finish the first three in one sitting:</p>
+        <ul>
+          <li>Paste the link to the product you want.</li>
+          <li>Tell us roughly how big it is and how many you need. Your full price in naira appears instantly — item cost, shipping, fees and duties, all broken down.</li>
+          <li>Pay in naira with your card, bank transfer or USSD.</li>
+          <li>We buy the item, ship it to our US warehouse, consolidate it into one box, fly it to Nigeria, clear customs and get it to you.</li>
+        </ul>
+        <p>You get a message at every stage, so you always know where your order is.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Which websites can I shop from?</summary>
+      <div class="a">
+        <p>Most trusted US retailers — Amazon, Walmart, Target, eBay, Best Buy, Apple, Nike, Sephora, Ulta, Back Market, SHEIN and many more.</p>
+        <p>Our price calculator works with any store link. If we haven't handled a particular site before, we'll confirm the product details with you before buying.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Can I buy from any website?</summary>
+      <div class="a">
+        <p>We can purchase from most legitimate online retailers. We may decline orders from sellers we can't verify, or for products that are prohibited, restricted or high risk.</p>
+        <p>If we decline an order after you've paid, you get a full refund.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Can I order several items at once?</summary>
+      <div class="a">
+        <p>Yes — add as many items as you like to one order, even from different stores. Everything is consolidated into a single box at our US warehouse, so you pay one shipping charge and get one delivery instead of several.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>How do I tell you the exact colour, size or version I want?</summary>
+      <div class="a">
+        <p>Every item has a note field — "Any size, colour or version we should pick?" That's what our shopper reads before buying, so be as specific as you like: <strong>size 42, black</strong> or <strong>256GB, not 128</strong>.</p>
+        <p>You can also attach a screenshot of the exact one you mean. This is the single best way to make sure you get precisely what you wanted.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Can I send something as a gift?</summary>
+      <div class="a">
+        <p>Yes. Enter the recipient's delivery details at checkout and we'll deliver straight to them. Add a note asking us to leave the receipt out of the box if you'd rather they didn't see the price.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>What if my item is out of stock or the price has changed?</summary>
+      <div class="a">
+        <p>We check every link before buying. If the item has sold out or the price has moved, we message you first. You can then pick something else, accept the new price, or take a full refund for that item.</p>
+        <p><strong>We will never substitute an item without your approval.</strong></p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Can I cancel my order?</summary>
+      <div class="a">
+        <p>Yes — a full refund any time before we've purchased from the retailer.</p>
+        <p>After we've bought it, cancellation depends on the retailer's own return policy and any costs already incurred. Once your box has left the US, change-of-mind cancellations aren't possible — but damaged, wrong or missing items are always refunded or replaced.</p>
+      </div>
+    </details>
+
+    <p class="cta">Still have questions? <a href="#contact">Contact support</a>.</p>
+  </section>
+
+  <!-- ══════════ PRICING ══════════ -->
+  <section id="pricing">
+    <h2>Pricing &amp; Payments</h2>
+
+    <details>
+      <summary>Do I need a dollar card?</summary>
+      <div class="a">
+        <p>No. You pay us in naira and we handle the international purchase for you. That's the whole point of Glavand.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>How is my price calculated?</summary>
+      <div class="a">
+        <p>You see every line before you pay:</p>
+        <ul>
+          <li><strong>Item cost</strong> — the store price, converted at our exchange rate</li>
+          <li><strong>US shipping</strong> — from the store to our US warehouse (often free)</li>
+          <li><strong>Shipping to Nigeria</strong> — based on your item's size category</li>
+          <li><strong>Service fee</strong> — our charge for buying and handling your order</li>
+          <li><strong>Customs and duties</strong> — estimated and included, so there's nothing to pay on arrival</li>
+          <li><strong>Delivery</strong> — pickup or to your door</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Why do you ask for the item's size instead of its weight?</summary>
+      <div class="a">
+        <p>Because almost nobody knows what their parcel weighs, and product pages rarely say. Picking a size category — pocket-sized, small, medium, large — takes two seconds and gets us close enough to quote you.</p>
+        <div class="promise">⚖️ <strong>Our fair-weight promise:</strong> we weigh your package at our US warehouse. If it's lighter than the category you paid for, we refund you the difference before it ships. If it's heavier, we send a small top-up link. Most customers get money back.</div>
+      </div>
+    </details>
+
+    <details>
+      <summary>Are there any hidden fees?</summary>
+      <div class="a">
+        <p>No. The total you see at checkout is what you pay, duties included.</p>
+        <p>The only time an amount changes afterwards is the weigh-in — and that goes both ways, with refunds far more common than top-ups.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Why is your price higher than the price on the store's website?</summary>
+      <div class="a">
+        <p>The store's price is only the item itself. Ours is the complete cost of getting it into your hands in Nigeria: the item, US shipping, air freight, customs duties, our service fee and local delivery.</p>
+        <p>Store prices also move — retailers change them, and exchange rates shift. If the price has changed by the time we buy, we tell you before spending your money.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Why do I pay before you buy the item?</summary>
+      <div class="a">
+        <p>Because we purchase on your behalf with our own US cards. Paying upfront lets us buy immediately, which protects you from price rises and items selling out while an order sits waiting.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>How can I pay?</summary>
+      <div class="a">
+        <p>Card, bank transfer or USSD — all through Paystack at checkout. Bank transfers generate a one-time account number for your exact amount and confirm automatically, so your order starts straight away.</p>
+      </div>
+    </details>
+
+    <p class="cta">Still have questions? <a href="#contact">Contact support</a>.</p>
+  </section>
+
+  <!-- ══════════ SHIPPING ══════════ -->
+  <section id="shipping">
+    <h2>Shipping &amp; Delivery</h2>
+
+    <details>
+      <summary>How long does delivery take?</summary>
+      <div class="a">
+        <p>Counted from the moment your payment clears:</p>
+        <ul>
+          <li><strong>Express air</strong> — <span class="e1">7–14 business days</span></li>
+          <li><strong>Standard air</strong> — <span class="e2">10–20 business days</span></li>
+        </ul>
+        <p>Delivery outside Lagos adds two to four days. Your estimate is shown before you pay, and we message you if anything shifts.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Can I track my order?</summary>
+      <div class="a">
+        <p>Yes. Tap <strong>Track order</strong> at the top of our site and enter your order number. You'll also get a message at each stage:</p>
+        <ul>
+          <li>Order placed</li>
+          <li>Bought from the store — with the retailer's own confirmation as proof</li>
+          <li>On its way to our US warehouse</li>
+          <li>At our US warehouse — weighed and photographed for you</li>
+          <li>Flying to Nigeria</li>
+          <li>Clearing customs</li>
+          <li>In Nigeria</li>
+          <li>Ready for you — out for delivery or waiting at your pickup branch</li>
+          <li>Delivered</li>
+        </ul>
+      </div>
+    </details>
+
+    <details>
+      <summary>Do you check my item before shipping it?</summary>
+      <div class="a">
+        <p>Yes. When your package reaches our US warehouse we open it, confirm the right product arrived, weigh it, and send you a photo. That photo is your proof — and ours, if we ever need to claim against a carrier.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Can I collect my order instead of having it delivered?</summary>
+      <div class="a">
+        <p>Yes, and it's cheaper. You can collect from a partner branch in Lagos or in your own state, or have it delivered to your door. You choose at checkout and the price updates as you switch.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Are my items insured?</summary>
+      <div class="a">
+        <p>Insurance may be available depending on the item and shipping method. If it applies to your order, we'll tell you before your box ships.</p>
+        <p>Separately: if your package is lost in transit, we refund you. We deal with the carrier ourselves — you don't wait on a claim.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>What can't be shipped?</summary>
+      <div class="a">
+        <p>Some items are barred by Nigerian customs, and others by the airlines:</p>
+        <ul>
+          <li>Firearms and ammunition</li>
+          <li>Illegal drugs</li>
+          <li>Explosives and flammable goods</li>
+          <li>Hazardous chemicals and aerosols</li>
+          <li>Loose lithium batteries</li>
+          <li>Restricted medical products and prescription medication</li>
+          <li>Anything else prohibited by law or carrier policy</li>
+        </ul>
+        <p>If something in your order is restricted, we tell you before buying and refund that item in full. Unsure? Send us the link first.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Do you deliver everywhere in Nigeria?</summary>
+      <div class="a">
+        <p>Yes — nationwide, using established local courier networks with branches in most states. Door delivery is available across their coverage; branch collection is the cheaper option and available in more locations.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Can I ship large or heavy items like a TV or furniture?</summary>
+      <div class="a">
+        <p>Often yes, but these are priced individually — freight rules and duties vary a lot at that size. Choose <strong>Oversized</strong> on the calculator and send us the link on WhatsApp. We'll come back with an exact price, usually within the hour.</p>
+      </div>
+    </details>
+
+    <p class="cta">Still have questions? <a href="#contact">Contact support</a>.</p>
+  </section>
+
+  <!-- ══════════ RETURNS ══════════ -->
+  <section id="returns">
+    <h2>Returns &amp; Refunds</h2>
+
+    <details>
+      <summary>What if I receive the wrong item?</summary>
+      <div class="a">
+        <p>Contact us within 48 hours of delivery. We'll investigate with the retailer and our logistics partners and put it right — a replacement or a full refund.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>What if my item arrives damaged?</summary>
+      <div class="a">
+        <p>Tell us within 48 hours and send clear photos of the item, its packaging, and the shipping box. Those three photos let us claim against whoever caused it.</p>
+        <p>Damaged items are refunded or replaced — this is never your cost to carry.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Can I return something I've changed my mind about?</summary>
+      <div class="a">
+        <p>Sometimes. It depends on the retailer's return window and whether the item is still in the US.</p>
+        <p>If your item is still at our US warehouse and the store accepts returns, we can usually send it back and refund the item cost — our service fee and any US shipping aren't refundable. Once your box has left the US, change-of-mind returns aren't possible.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>How are refunds processed?</summary>
+      <div class="a">
+        <p>Back to your original payment method wherever possible. Timing depends on your bank — usually a few working days.</p>
+        <p>We refund the exact naira amount you paid, regardless of how the exchange rate has moved since. Prefer it instantly? We can issue it as credit towards your next order.</p>
+      </div>
+    </details>
+
+    <p class="cta">Still have questions? <a href="#contact">Contact support</a>.</p>
+  </section>
+
+  <!-- ══════════ SUPPORT ══════════ -->
+  <section id="support">
+    <h2>Account &amp; Support</h2>
+
+    <details>
+      <summary>How do I contact Glavand?</summary>
+      <div class="a">
+        <p>WhatsApp is fastest, and it's where your order updates arrive. Email works too if you'd rather write.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Do I need to create an account?</summary>
+      <div class="a">
+        <p>No. Order in one go, and track it any time with the order number we give you at checkout — keep that message.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Can you help me choose a product?</summary>
+      <div class="a">
+        <p>Happy to. Send us what you're considering and we'll weigh in on the store, the shipping cost, and whether there's a cheaper way to get the same thing.</p>
+      </div>
+    </details>
+
+    <details>
+      <summary>Is my personal information safe?</summary>
+      <div class="a">
+        <p>Yes. Payments are handled entirely by Paystack — we never see or store your card details. Your contact and delivery details are used only to process your order and support you, and we don't sell them to anyone.</p>
+      </div>
+    </details>
+
+    <p class="cta">Still have questions? <a href="#contact">Contact support</a>.</p>
+  </section>
+
+  <!-- ══════════ CONTACT ══════════ -->
+  <div class="contact" id="contact">
+    <h3>Still need help?</h3>
+    <p>If you couldn't find your answer, our team is one message away. WhatsApp gets the quickest reply.</p>
+    <div class="btns">
+      <a class="b1" id="waBtn" href="#" target="_blank" rel="noopener">Message us on WhatsApp</a>
+      <a class="b2" id="mailBtn" href="#">Email us</a>
+    </div>
+  </div>
+
+  <footer>© <span id="yr"></span> <span class="bn2">Glavand</span> · Shop the US from Nigeria · <a href="/">Back to shop</a></footer>
+</main>
+
+<script>
+  // fill in brand details from HELP config
+  document.getElementById('bn').textContent = HELP.brandName;
+  document.querySelectorAll('.bn2').forEach(function(el){ el.textContent = HELP.brandName; });
+  document.getElementById('yr').textContent = new Date().getFullYear();
+  document.getElementById('waBtn').href = "https://wa.me/" + HELP.whatsappNumber +
+    "?text=" + encodeURIComponent("Hi " + HELP.brandName + "! I have a question:");
+  document.getElementById('mailBtn').href = "mailto:" + HELP.email;
+  document.querySelectorAll('.e1').forEach(function(el){ el.textContent = HELP.etaExpress; });
+  document.querySelectorAll('.e2').forEach(function(el){ el.textContent = HELP.etaStandard; });
+  document.title = "Help Center — " + HELP.brandName;
+
+  // ── search filter ──
+  var q = document.getElementById('q'),
+      count = document.getElementById('count'),
+      nores = document.getElementById('nores'),
+      jump = document.getElementById('jump'),
+      sections = Array.prototype.slice.call(document.querySelectorAll('section')),
+      items = Array.prototype.slice.call(document.querySelectorAll('details'));
+
+  q.addEventListener('input', function(){
+    var term = q.value.trim().toLowerCase();
+
+    if (!term) {
+      items.forEach(function(d){ d.style.display = ''; d.open = false; });
+      sections.forEach(function(s){ s.style.display = ''; });
+      jump.style.display = 'flex';
+      nores.style.display = 'none';
+      count.textContent = '';
+      return;
+    }
+
+    var hits = 0;
+    items.forEach(function(d){
+      var match = d.textContent.toLowerCase().indexOf(term) !== -1;
+      d.style.display = match ? '' : 'none';
+      d.open = match;
+      if (match) hits++;
+    });
+    sections.forEach(function(s){
+      var any = Array.prototype.slice.call(s.querySelectorAll('details'))
+                 .some(function(d){ return d.style.display !== 'none'; });
+      s.style.display = any ? '' : 'none';
+    });
+
+    jump.style.display = 'none';
+    nores.style.display = hits ? 'none' : 'block';
+    count.textContent = hits + (hits === 1 ? ' answer' : ' answers') + ' found';
+  });
+</script>
+</body>
+</html>
