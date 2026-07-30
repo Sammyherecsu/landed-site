@@ -3,8 +3,8 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Landed — Shop any US store, delivered to Nigeria. Pay in naira.</title>
-<meta name="description" content="Paste any Amazon, eBay, Walmart, Ulta or SHEIN link and see your full cost in naira — item, shipping, fees and duties in one honest number. Delivered to your door or nearest GIGL branch." />
+<title>Glavand — Shop any US store, delivered to Nigeria. Pay in naira.</title>
+<meta name="description" content="Paste any product link from a US store and instantly see your total landed cost in naira — including shipping, fees and import charges. Delivered across Nigeria." />
 
 <!-- ============================================================
   LANDED — Phase 1
@@ -59,7 +59,7 @@ const BANDS = [
   { id:"unsure", emoji:"❓", label:"Not sure",      kg:1.5,  hint:"we price it as Small — refunded if it weighs less" },
 ];
 
-const KNOWN_STORES = ["amazon","ebay","walmart","backmarket","target","ulta","shein","nike","sephora","bestbuy","fashionnova","apple","macys","zara","adidas","asos","costco","homedepot","lowes","gamestop","wayfair"];
+const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","sephora","bestbuy","fashionnova","apple","macys","zara","adidas","asos","costco","homedepot","lowes","gamestop","wayfair"];
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -83,10 +83,12 @@ const KNOWN_STORES = ["amazon","ebay","walmart","backmarket","target","ulta","sh
   header{background:var(--green);color:var(--paper);height:60px;display:flex;align-items:center;
          justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:50;}
   .logo{display:flex;align-items:center;gap:10px;}
- .logo-mark{width:28px;height:28px;display:block;}
+  .logo-mark{width:28px;height:28px;display:block;}
   .logo-name{font-family:'Sora';font-weight:700;font-size:18px;letter-spacing:-.02em;}
   .hdr-right{display:flex;align-items:center;gap:12px;}
-  .rate-chip{font-family:'IBM Plex Mono';font-size:12px;background:var(--green-deep);padding:6px 10px;border-radius:6px;}
+  .rate-chip{font-family:'IBM Plex Mono';font-size:11px;background:var(--green-deep);padding:5px 10px;
+             border-radius:6px;line-height:1.35;text-align:right;opacity:.9;}
+  .rate-chip .rl{display:block;font-size:8.5px;letter-spacing:.14em;text-transform:uppercase;opacity:.6;}
   .track-link{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;color:var(--paper);
               background:none;border:1px solid rgba(245,242,234,.35);padding:6px 11px;border-radius:6px;}
 
@@ -98,10 +100,8 @@ const KNOWN_STORES = ["amazon","ebay","walmart","backmarket","target","ulta","sh
   .hero h1 .hl{background:var(--yellow);padding:0 10px;border-radius:8px;}
   .hero p{color:var(--mute);font-size:16px;margin-top:14px;max-width:600px;line-height:1.55;}
   .stores{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
-.pill{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono';font-size:11px;
-        letter-spacing:.04em;color:var(--green);background:var(--white);border:1px solid var(--line);
-        border-radius:999px;padding:5px 12px;}
-  .pill img{width:15px;height:15px;object-fit:contain;border-radius:3px;}
+  .pill{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.04em;color:var(--green);
+        background:var(--white);border:1px solid var(--line);border-radius:999px;padding:6px 12px;}
   .pill-any{background:var(--yellow);border-color:var(--yellow);font-weight:600;}
   .flags{font-size:13px;letter-spacing:.06em;opacity:.85;margin-left:6px;}
 
@@ -184,6 +184,8 @@ const KNOWN_STORES = ["amazon","ebay","walmart","backmarket","target","ulta","sh
   .promise{font-family:'IBM Plex Mono';font-size:11px;color:var(--save);background:var(--white);
            border:1px dashed var(--save);border-radius:8px;padding:9px 12px;margin-bottom:14px;line-height:1.5;}
 
+  .trust{display:flex;flex-wrap:wrap;gap:8px 20px;margin-top:20px;font-family:'IBM Plex Mono';
+         font-size:11.5px;color:var(--save);letter-spacing:.02em;}
   .how{margin-top:64px;} .how h2,.faq h2,.track h2{font-family:'Sora';font-weight:800;font-size:26px;
        color:var(--green);letter-spacing:-.02em;margin-bottom:18px;}
   .how-grid{display:grid;gap:14px;grid-template-columns:repeat(auto-fit,minmax(210px,1fr));}
@@ -200,6 +202,7 @@ const KNOWN_STORES = ["amazon","ebay","walmart","backmarket","target","ulta","sh
 
   footer{margin-top:70px;border-top:1px solid var(--line);padding:18px 0 8px;font-family:'IBM Plex Mono';
          font-size:11px;color:var(--mute);}
+  footer a{color:var(--green);}
 
   /* tracking */
   .stage{display:flex;gap:14px;position:relative;padding-bottom:24px;}
@@ -217,33 +220,31 @@ const KNOWN_STORES = ["amazon","ebay","walmart","backmarket","target","ulta","sh
 <body>
 
 <header>
-<div class="logo"><img src="/glavand-logoupdate.svg.png" alt="" class="logo-mark" /><span class="logo-name" id="brandName">Glavand</span><span class="flags">🇺🇸 to 🇳🇬</span></div>
-    <div class="rate-chip">$1 = ₦<span id="rateChip"></span></div>
+  <div class="logo"><img src="/glavand-logoupdate.svg.png" alt="" class="logo-mark" /><span class="logo-name" id="brandName">Glavand</span><span class="flags">US → Nigeria</span></div>
+  <div class="hdr-right">
+    <div class="rate-chip"><span class="rl">Today's rate</span>$1 = ₦<span id="rateChip"></span></div>
     <button class="track-link" id="trackBtn">TRACK ORDER</button>
   </div>
 </header>
 
 <main>
   <section class="hero">
-    <h1>Shop any US store.<br>Pay in naira. Know the <span class="hl">full price</span> upfront.</h1>
-    <p>Paste a product link and see your complete cost to your door in Nigeria — item, shipping, fees and duties in one honest number. Delivered in <strong id="etaText"></strong>.</p>
+    <h1>Shop any U.S. store.<br>Pay in naira.<br>Delivered to Nigeria.</h1>
+    <p>Paste any product link and instantly see your total landed cost — including shipping, fees and import charges. Delivered in <strong id="etaText"></strong>.</p>
     <div class="stores">
-     <span class="pill"><img src="https://www.google.com/s2/favicons?domain=amazon.com&sz=64" alt="" />Amazon</span>
-      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=ebay.com&sz=64" alt="" />eBay</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=amazon.com&sz=64" alt="" />Amazon</span>
       <span class="pill"><img src="https://www.google.com/s2/favicons?domain=walmart.com&sz=64" alt="" />Walmart</span>
-      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=target.com&sz=64" alt="" />Target</span>
-      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=ulta.com&sz=64" alt="" />Ulta</span>
-      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=sephora.com&sz=64" alt="" />Sephora</span>
-      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=backmarket.com&sz=64" alt="" />Back Market</span>
-      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=shein.com&sz=64" alt="" />SHEIN</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=apple.com&sz=64" alt="" />Apple</span>
       <span class="pill"><img src="https://www.google.com/s2/favicons?domain=nike.com&sz=64" alt="" />Nike</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=ulta.com&sz=64" alt="" />Ulta</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=ebay.com&sz=64" alt="" />eBay</span>
       <span class="pill pill-any">+ any US store</span>
     </div>
   </section>
 
   <!-- ————— QUOTE BUILDER ————— -->
   <section class="calc">
-    <div class="step">Paste a link and get your price</div>
+    <div class="step">Paste a product link</div>
 
     <div class="field">
       <label for="linkInput">Product link</label>
@@ -311,7 +312,7 @@ const KNOWN_STORES = ["amazon","ebay","walmart","backmarket","target","ulta","sh
       <button class="btn" id="quoteBtn">Show my price</button>
     </div>
 
-    <button class="btn" id="startBtn">Continue</button>
+    <button class="btn" id="startBtn">Get my quote</button>
     <div class="err" id="calcErr" style="display:none;"></div>
 
     <!-- ————— WAYBILL ————— -->
@@ -347,6 +348,13 @@ const KNOWN_STORES = ["amazon","ebay","walmart","backmarket","target","ulta","sh
     </div>
   </section>
 
+  <!-- ————— TRUST ROW ————— -->
+  <div class="trust">
+    <span>✓ Secure checkout via Paystack</span>
+    <span>✓ No hidden fees</span>
+    <span>✓ Delivered across Nigeria</span>
+  </div>
+
   <!-- ————— HOW IT WORKS ————— -->
   <section class="how">
     <h2>How it works</h2>
@@ -362,7 +370,7 @@ const KNOWN_STORES = ["amazon","ebay","walmart","backmarket","target","ulta","sh
     </div>
   </section>
 
-<footer>© <span id="yr"></span> <span id="brandFoot">Glavand</span> · <a href="/help.html" style="color:var(--green);">Help Center</a> · <a href="/help.html#shipping" style="color:var(--green);">Shipping</a> · <a href="/help.html#returns" style="color:var(--green);">Returns</a> · Questions? WhatsApp us anytime</footer>
+  <footer>© <span id="yr"></span> <span id="brandFoot">Glavand</span> · <a href="/help.html">Help Center</a> · <a href="/help.html#shipping">Shipping</a> · <a href="/help.html#returns">Returns</a> · Questions? WhatsApp us anytime</footer>
 </main>
 
 <!-- ————— CART BAR ————— -->
@@ -386,7 +394,6 @@ const displayRate = CONFIG.officialRate + CONFIG.buffer;
 // —— boot ——
 $("rateChip").textContent = displayRate.toLocaleString();
 $("etaText").textContent = CONFIG.etaDays;
-$("etaText2").textContent = CONFIG.etaDays;
 $("yr").textContent = new Date().getFullYear();
 $("brandName").textContent = CONFIG.brandName;
 $("brandFoot").textContent = CONFIG.brandName;
