@@ -59,7 +59,7 @@ const BANDS = [
   { id:"unsure", emoji:"❓", label:"Not sure",      kg:1.5,  hint:"we price it as Small — refunded if it weighs less" },
 ];
 
-const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","sephora","bestbuy","fashionnova","apple","macys","zara","adidas","asos","costco","homedepot","lowes","gamestop","wayfair"];
+const KNOWN_STORES = ["amazon","ebay","walmart","backmarket","target","ulta","shein","nike","sephora","bestbuy","fashionnova","apple","macys","zara","adidas","asos","costco","homedepot","lowes","gamestop","wayfair"];
 </script>
 
 <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -99,8 +99,10 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
   .hero h1 .hl{background:var(--yellow);padding:0 10px;border-radius:8px;}
   .hero p{color:var(--mute);font-size:16px;margin-top:14px;max-width:600px;line-height:1.55;}
   .stores{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
-  .pill{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.04em;color:var(--green);
-        background:var(--white);border:1px solid var(--line);border-radius:999px;padding:6px 12px;}
+.pill{display:inline-flex;align-items:center;gap:6px;font-family:'IBM Plex Mono';font-size:11px;
+        letter-spacing:.04em;color:var(--green);background:var(--white);border:1px solid var(--line);
+        border-radius:999px;padding:5px 12px;}
+  .pill img{width:15px;height:15px;object-fit:contain;border-radius:3px;}
   .pill-any{background:var(--yellow);border-color:var(--yellow);font-weight:600;}
   .flags{font-size:13px;letter-spacing:.06em;opacity:.85;margin-left:6px;}
 
@@ -228,7 +230,16 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
     <h1>Shop any US store.<br>Pay in naira. Know the <span class="hl">full price</span> upfront.</h1>
     <p>Paste a product link and see your complete cost to your door in Nigeria — item, shipping, fees and duties in one honest number. Delivered in <strong id="etaText"></strong>.</p>
     <div class="stores">
-      <span class="pill">Amazon</span><span class="pill">eBay</span><span class="pill">Walmart</span><span class="pill">Target</span><span class="pill">Ulta</span><span class="pill">Sephora</span><span class="pill">SHEIN</span><span class="pill">Nike</span><span class="pill pill-any">+ any US store</span>
+     <span class="pill"><img src="https://www.google.com/s2/favicons?domain=amazon.com&sz=64" alt="" />Amazon</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=ebay.com&sz=64" alt="" />eBay</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=walmart.com&sz=64" alt="" />Walmart</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=target.com&sz=64" alt="" />Target</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=ulta.com&sz=64" alt="" />Ulta</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=sephora.com&sz=64" alt="" />Sephora</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=backmarket.com&sz=64" alt="" />Back Market</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=shein.com&sz=64" alt="" />SHEIN</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=nike.com&sz=64" alt="" />Nike</span>
+      <span class="pill pill-any">+ any US store</span>
     </div>
   </section>
 
