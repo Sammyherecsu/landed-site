@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light" />
 <title>Glavand — Shop any US store, delivered to Nigeria. Pay in naira.</title>
 <meta name="description" content="Paste any product link from a US store and instantly see your total landed cost in naira — including shipping, fees and import charges. Delivered across Nigeria." />
 
@@ -41,6 +42,10 @@ const CONFIG = {
 
   etaDays: "10–14 days",
 
+  // —— gift-to-US feature ——
+  giftServiceFeePct: 7,        // higher than NG: convenience purchase, less price shopping
+  giftEta: "3–5 days",
+
   whatsappNumber: "2348000000000",        // your WhatsApp Business number, no +
   paystackPublicKey: "pk_test_REPLACE_ME", // your Paystack PUBLIC key (pk_live_… when ready)
 
@@ -68,7 +73,7 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
 <script src="https://js.paystack.co/v1/inline.js"></script>
 
 <style>
-  :root{--green:#0B3D2E;--green-deep:#072A20;--paper:#F5F2EA;--yellow:#FFC93C;
+  :root{color-scheme:light;--green:#0B3D2E;--green-deep:#072A20;--paper:#F5F2EA;--yellow:#FFC93C;
         --ink:#141A17;--mute:#5E6B64;--line:#D9D4C7;--white:#fff;--save:#1E7A4F;--red:#C0392B;}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;}
@@ -100,13 +105,22 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
   .hero h1 .hl{background:var(--yellow);padding:0 10px;border-radius:8px;}
   .hero p{color:var(--mute);font-size:16px;margin-top:14px;max-width:600px;line-height:1.55;}
   .stores{display:flex;flex-wrap:wrap;gap:7px;margin-top:18px;}
- .pill{display:inline-flex;align-items:center;gap:7px;font-family:'IBM Plex Mono';font-size:11px;
-        letter-spacing:.04em;color:var(--green);background:var(--white);border:1px solid var(--line);
-        border-radius:999px;padding:6px 13px;line-height:1;}
-  .pill img{width:15px;height:15px;object-fit:contain;border-radius:3px;flex-shrink:0;}
+  .pill{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.04em;color:var(--green);
+        background:var(--white);border:1px solid var(--line);border-radius:999px;padding:6px 12px;}
   .pill-any{background:var(--yellow);border-color:var(--yellow);font-weight:600;}
   .flags{font-size:13px;letter-spacing:.06em;opacity:.85;margin-left:6px;}
 
+  .modes{display:inline-flex;background:var(--white);border:1px solid var(--line);border-radius:999px;
+         padding:4px;margin:22px 0 14px;gap:3px;}
+  .modes button{font-family:'Sora';font-weight:700;font-size:13.5px;padding:10px 19px;border:none;
+                border-radius:999px;background:none;color:var(--mute);}
+  .modes .on{background:var(--green);color:var(--paper);}
+  .modenote{font-family:'IBM Plex Mono';font-size:11px;color:var(--red);margin-bottom:10px;display:none;}
+  .gbox{background:#FFF9E8;border:1px dashed var(--yellow);border-radius:11px;padding:14px 16px;margin:4px 0 14px;}
+  .gbox .gt{font-family:'Sora';font-weight:700;font-size:13px;color:var(--green);margin-bottom:3px;}
+  .gbox .gs{font-size:11.5px;color:var(--mute);line-height:1.5;}
+  .chk{display:flex;align-items:center;gap:9px;font-size:13.5px;color:var(--ink);margin:12px 0;cursor:pointer;}
+  .chk input{width:17px;height:17px;accent-color:var(--green);cursor:pointer;}
   .calc{background:var(--white);border-radius:16px;box-shadow:0 12px 36px rgba(11,61,46,.10);padding:24px;margin-top:28px;}
   .step{font-family:'IBM Plex Mono';font-size:10px;letter-spacing:.16em;color:var(--mute);margin-bottom:9px;text-transform:uppercase;}
   .field{margin-bottom:14px;}
@@ -232,18 +246,23 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
 <main>
   <section class="hero">
     <h1>Shop any U.S. store.<br>Pay in naira.<br>Delivered to Nigeria.</h1>
-    <p>Paste any product link and instantly see your total landed cost — including shipping, fees and import charges. Delivered in <strong id="etaText"></strong>.</p>
+    <p id="heroSub">Paste any product link and instantly see your total landed cost — including shipping, fees and import charges.</p>
     <div class="stores">
       <span class="pill"><img src="https://www.google.com/s2/favicons?domain=amazon.com&sz=64" alt="" />Amazon</span>
-       <span class="pill"><img src="https://www.google.com/s2/favicons?domain=ebay.com&sz=64" alt="" />eBay</span>
       <span class="pill"><img src="https://www.google.com/s2/favicons?domain=walmart.com&sz=64" alt="" />Walmart</span>
-      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=sephora.com&sz=64" alt="" />Sephora</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=apple.com&sz=64" alt="" />Apple</span>
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=nike.com&sz=64" alt="" />Nike</span>
       <span class="pill"><img src="https://www.google.com/s2/favicons?domain=ulta.com&sz=64" alt="" />Ulta</span>
-      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=nike.com&sz=64" alt="" />nike</span>
-     
+      <span class="pill"><img src="https://www.google.com/s2/favicons?domain=ebay.com&sz=64" alt="" />eBay</span>
       <span class="pill pill-any">+ any US store</span>
     </div>
   </section>
+
+  <div class="modes" id="modes">
+    <button class="on" data-mode="ng">Ship to Nigeria</button>
+    <button data-mode="gift">🎁 Gift someone in the U.S.</button>
+  </div>
+  <div class="modenote" id="modenote">⚠ Finish or clear your current order before switching.</div>
 
   <!-- ————— QUOTE BUILDER ————— -->
   <section class="calc">
@@ -263,11 +282,18 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
         <label for="priceInput" id="priceLabel">Price on the store page (USD)</label>
         <input id="priceInput" class="mono" type="number" min="0" step="0.01" placeholder="e.g. 189.99" inputmode="decimal" />
       </div>
+      <div class="field">
+        <label for="usShipInput">US shipping, if the page shows one (USD)</label>
+        <input id="usShipInput" class="mono" type="number" min="0" step="0.01" placeholder="Leave blank if free or unsure" inputmode="decimal" />
+        <div class="note-hint">Blank is fine — we check the real cost before buying and refund any difference.</div>
+      </div>
     </div>
 
     <div id="detailsBlock" style="display:none;">
-      <div class="step" style="margin-top:6px;">Which best describes your item?</div>
-      <div class="bands" id="bands"></div>
+      <div id="sizeBlock">
+        <div class="step" style="margin-top:6px;">Which best describes your item?</div>
+        <div class="bands" id="bands"></div>
+      </div>
 
       <div class="row" style="margin-top:16px;align-items:flex-end;">
         <div class="field" style="flex:0 0 auto;">
@@ -353,9 +379,9 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
 
   <!-- ————— TRUST ROW ————— -->
   <div class="trust">
-    <span> Secure checkout</span>
-    <span> No hidden fees</span>
-    <span> Delivered across Nigeria</span>
+    <span>✓ Secure checkout via Paystack</span>
+    <span>✓ No hidden fees</span>
+    <span>✓ Delivered across Nigeria</span>
   </div>
 
   <!-- ————— HOW IT WORKS ————— -->
@@ -378,7 +404,7 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
 
 <!-- ————— CART BAR ————— -->
 <div class="cartbar" id="cartbar">
-  <span class="sum"><span id="cbCount"></span> · <span id="cbKg"></span>kg</span>
+  <span class="sum"><span id="cbCount"></span><span id="cbKgWrap"> · <span id="cbKg"></span>kg</span></span>
   <span style="display:flex;align-items:center;gap:14px;">
     <span class="amt" id="cbTotal"></span>
     <button class="btn btn-yellow" id="checkoutBtn" style="padding:11px 20px;font-size:14px;">Checkout</button>
@@ -396,11 +422,48 @@ const displayRate = CONFIG.officialRate + CONFIG.buffer;
 
 // —— boot ——
 $("rateChip").textContent = displayRate.toLocaleString();
-$("etaText").textContent = CONFIG.etaDays;
 $("yr").textContent = new Date().getFullYear();
 $("brandName").textContent = CONFIG.brandName;
 $("brandFoot").textContent = CONFIG.brandName;
 document.title = CONFIG.brandName + " — Shop any US store, delivered to Nigeria. Pay in naira.";
+
+// —— mode: 'ng' (main business) or 'gift' (send to a US address) ——
+let mode = "ng";
+
+$("modes").querySelectorAll("[data-mode]").forEach(btn => {
+  btn.addEventListener("click", () => {
+    const want = btn.dataset.mode;
+    if (want === mode) return;
+    if (cart.length) {                       // one order = one mode
+      $("modenote").style.display = "block";
+      setTimeout(() => { $("modenote").style.display = "none"; }, 4000);
+      return;
+    }
+    mode = want;
+    $("modes").querySelectorAll("button").forEach(b => b.classList.remove("on"));
+    btn.classList.add("on");
+    applyMode();
+  });
+});
+
+function applyMode(){
+  const gift = mode === "gift";
+  $("sizeBlock").style.display = gift ? "none" : "block";
+  $("heroSub").textContent = gift
+    ? "Buy from any US store and have it delivered straight to someone's door in the States. Pay in naira, arrives in " + CONFIG.giftEta + "."
+    : "Paste any product link and instantly see your total landed cost — including shipping, fees and import charges.";
+  // reset the builder
+  selBand = null; qty = 1; renderQty();
+  $("bands").querySelectorAll(".band").forEach(x => x.classList.remove("sel"));
+  $("waybill").style.display = "none";
+  $("detailsBlock").style.display = "none";
+  $("priceRow").style.display = "none";
+  $("startBtn").style.display = "inline-block";
+  $("oversized").style.display = "none";
+  $("quoteBtn").style.display = "inline-block";
+  $("linkInput").value = ""; $("priceInput").value = ""; $("usShipInput").value = "";
+  $("itemNote").value = "";
+}
 
 // —— render weight bands ——
 let selBand = null;
@@ -545,15 +608,19 @@ $("startBtn").addEventListener("click", async () => {
 });
 
 // —— pricing maths ——
-function calcItem(price, bandKg, quantity){
+function calcItem(price, bandKg, quantity, usShipOverride){
   const lineUSD = price * quantity;
   const kg = bandKg * quantity;
-  const usShipUSD = price >= CONFIG.usFreeShipOver ? 0 : CONFIG.usShipFlatUSD * quantity;
+  // customer told us the actual shipping → use it. otherwise estimate.
+  const usShipUSD = (usShipOverride !== null && usShipOverride !== undefined && !isNaN(usShipOverride))
+    ? usShipOverride
+    : (price >= CONFIG.usFreeShipOver ? 0 : CONFIG.usShipFlatUSD * quantity);
+  const gift     = mode === "gift";
   const itemN    = lineUSD * displayRate;
   const usShipN  = usShipUSD * displayRate;
-  const intlN    = kg * CONFIG.shipPerKgUSD * displayRate;
-  const serviceN = itemN * CONFIG.serviceFeePct / 100;
-  const dutiesN  = itemN * CONFIG.dutiesPct / 100;
+  const intlN    = gift ? 0 : kg * CONFIG.shipPerKgUSD * displayRate;
+  const serviceN = itemN * (gift ? CONFIG.giftServiceFeePct : CONFIG.serviceFeePct) / 100;
+  const dutiesN  = gift ? 0 : itemN * CONFIG.dutiesPct / 100;
   return { kg, usShipUSD, itemN, usShipN, intlN, serviceN, dutiesN,
            total: itemN + usShipN + intlN + serviceN + dutiesN };
 }
@@ -569,30 +636,44 @@ $("quoteBtn").addEventListener("click", () => {
   if(isNaN(price) || price <= 0){
     err.textContent = "⚠ Enter the item's price in USD — you'll find it on the store page."; err.style.display="block"; return;
   }
-  if(!selBand){ err.textContent = "⚠ Pick how heavy the item is."; err.style.display="block"; return; }
+  if(mode === "ng" && !selBand){ err.textContent = "⚠ Pick which best describes your item."; err.style.display="block"; return; }
+  const band = (mode === "gift") ? { id:"gift", label:"Gift", kg:0 } : selBand;
   err.style.display = "none";
 
   const title = (fetched && fetched.title) ? fetched.title : "Item from " + host;
   const image = (fetched && fetched.image) ? fetched.image : null;
-  currentItem = { link, host, title, image, price, band:selBand, qty,
-                  note:$("itemNote").value.trim(), photo:itemPhoto };
+  const usShipTyped = $("usShipInput").value.trim() === "" ? null : parseFloat($("usShipInput").value);
+  currentItem = { link, host, title, image, price, band, qty,
+                  note:$("itemNote").value.trim(), photo:itemPhoto, usShip:usShipTyped };
 
-  const q = calcItem(price, selBand.kg, qty);
+  const q = calcItem(price, band.kg, qty, usShipTyped);
   $("wbStore").textContent = host.toUpperCase();
   $("wbTitle").textContent = title;
-  $("wbMeta").textContent = fmtUSD(price) + (qty>1 ? " × " + qty : "") + " · " + selBand.label.toLowerCase() + " · " + q.kg + "kg";
+  $("wbMeta").textContent = fmtUSD(price) + (qty>1 ? " × " + qty : "")
+    + (mode === "gift" ? " · gift to a US address" : " · " + band.label.toLowerCase() + " · " + q.kg + "kg");
   $("wbNote").textContent = currentItem.note ? "“" + currentItem.note + "”" : "";
   const img = $("wbImg");
   if(image){ img.src = image; img.style.display="block"; img.onerror = () => img.style.display="none"; }
   else img.style.display = "none";
 
-  $("wbLines").innerHTML = [
-    ["Item" + (qty>1 ? "s — " + fmtUSD(price) + " × " + qty : " — " + fmtUSD(price)) + " × ₦" + displayRate.toLocaleString(), fmtN(q.itemN)],
-    ["US shipping to our warehouse" + (q.usShipUSD===0 ? " — FREE" : ""), q.usShipUSD===0 ? "₦0" : fmtN(q.usShipN)],
-    ["Shipping to Nigeria — " + q.kg + "kg", fmtN(q.intlN)],
-    ["Service fee — " + CONFIG.serviceFeePct + "%", fmtN(q.serviceN)],
-    ["Customs & duties — " + CONFIG.dutiesPct + "%", fmtN(q.dutiesN)],
-  ].map(([l,v]) => `<div class="line"><span class="l">${esc(l)}</span><span class="v">${v}</span></div>`).join("");
+  const itemLbl = "Item" + (qty>1 ? "s — " + fmtUSD(price) + " × " + qty : " — " + fmtUSD(price)) + " × ₦" + displayRate.toLocaleString();
+  const rows = (mode === "gift")
+    ? [
+        [itemLbl, fmtN(q.itemN)],
+        ["US delivery to recipient" + (q.usShipUSD===0 ? " — FREE" : (usShipTyped===null ? " (estimated)" : "")),
+          q.usShipUSD===0 ? "₦0" : fmtN(q.usShipN)],
+        ["Gift wrap & message", "FREE"],
+        ["Service fee — " + CONFIG.giftServiceFeePct + "%", fmtN(q.serviceN)],
+      ]
+    : [
+        [itemLbl, fmtN(q.itemN)],
+        ["US shipping to our warehouse" + (q.usShipUSD===0 ? " — FREE" : (usShipTyped===null ? " (estimated)" : "")),
+          q.usShipUSD===0 ? "₦0" : fmtN(q.usShipN)],
+        ["Shipping to Nigeria — " + q.kg + "kg", fmtN(q.intlN)],
+        ["Service fee — " + CONFIG.serviceFeePct + "%", fmtN(q.serviceN)],
+        ["Customs & duties — " + CONFIG.dutiesPct + "%", fmtN(q.dutiesN)],
+      ];
+  $("wbLines").innerHTML = rows.map(([l,v]) => `<div class="line"><span class="l">${esc(l)}</span><span class="v">${v}</span></div>`).join("");
   $("wbTotal").textContent = fmtN(q.total);
   $("waybill").style.display = "block";
   $("waybill").scrollIntoView({behavior:"smooth", block:"nearest"});
@@ -614,6 +695,7 @@ $("addBtn").addEventListener("click", () => {
   $("startBtn").style.display = "inline-block";
   $("fetchStatus").style.display = "none";
   $("linkInput").value = ""; $("priceInput").value = ""; $("itemNote").value = "";
+  $("usShipInput").value = "";
   $("storeTag").style.display = "none";
   itemPhoto = null; $("itemShot").value = "";
   $("shotPreview").style.display = "none";
@@ -630,7 +712,7 @@ $("addBtn").addEventListener("click", () => {
 function orderTotals(deliveryFee){
   let itemsN=0, usShipN=0, totalKg=0;
   cart.forEach(c => {
-    const q = calcItem(c.price, c.band.kg, c.qty);
+    const q = calcItem(c.price, c.band.kg, c.qty, c.usShip);
     itemsN += q.itemN; usShipN += q.usShipN; totalKg += q.kg;
   });
   const intlN = totalKg * CONFIG.shipPerKgUSD * displayRate;
@@ -645,9 +727,10 @@ function renderCartBar(){
   if(cart.length === 0){ bar.classList.remove("on"); return; }
   const t = orderTotals(0);
   const units = cart.reduce((s,c)=>s+c.qty,0);
-  $("cbCount").textContent = units + " item" + (units>1?"s":"");
   $("cbKg").textContent = t.totalKg.toFixed(1);
-  $("cbTotal").textContent = fmtN(t.total) + " + delivery";
+  $("cbCount").textContent = units + " item" + (units>1?"s":"") + (mode==="gift" ? " · gift to the U.S." : "");
+  $("cbTotal").textContent = fmtN(t.total) + (mode==="gift" ? "" : " + delivery");
+  $("cbKgWrap").style.display = (mode==="gift") ? "none" : "inline";
   bar.classList.add("on");
 }
 
@@ -661,12 +744,18 @@ $("overlay").addEventListener("click", e => { if(e.target === $("overlay")) clos
 $("checkoutBtn").addEventListener("click", () => openModal(renderCheckout));
 
 function renderCheckout(){
-  const del = CONFIG.delivery.find(d => d.id === selDelivery);
+  const gift = mode === "gift";
+  const del = gift ? { id:"gift", label:"Delivered to your recipient in the U.S.", fee:0, eta:CONFIG.giftEta }
+                   : CONFIG.delivery.find(d => d.id === selDelivery);
   const t = orderTotals(del.fee);
   $("modalBox").innerHTML = `
-    <h3>Your order</h3>
-    <div class="sub">One box · ${t.totalKg.toFixed(1)}kg · arrives in ${CONFIG.etaDays}</div>
-    <div class="promise">⚖️ We weigh your package at our US warehouse. Lighter than you paid for? We refund the difference before it ships.</div>
+    <h3>${gift ? "Your gift" : "Your order"}</h3>
+    <div class="sub">${gift
+      ? "Delivered to your recipient in the U.S. · arrives in " + CONFIG.giftEta + " · no customs, no duties"
+      : "One box · " + t.totalKg.toFixed(1) + "kg · arrives in " + CONFIG.etaDays}</div>
+    <div class="promise">${gift
+      ? "🎁 We buy it, wrap it, include your message and leave the receipt out of the box. We confirm the real US shipping cost before buying — cheaper than quoted, we refund the difference."
+      : "⚖️ We confirm the real weight and the real US shipping cost before your box ships. Cheaper than quoted? We refund you the difference. Most customers get money back."}</div>
     ${cart.map((c,i)=>`
       <div class="citem">
         <span>
@@ -689,21 +778,39 @@ function renderCheckout(){
         ].map(([l,v])=>`<div class="line"><span class="l">${l}</span><span class="v">${v}</span></div>`).join("")}
     </div>
 
+    ${gift ? `
+    <div class="step" style="margin:16px 0 8px;">Who is it for?</div>
+    <div class="row">
+      <div class="field"><label>Recipient's full name</label><input id="gName" placeholder="Amara Okeke"/></div>
+      <div class="field"><label>Their US phone (for the courier)</label><input id="gPhone" class="mono" inputmode="tel" placeholder="(404) 555-0147"/></div>
+    </div>
+    <div class="field"><label>Delivery address in the U.S.</label>
+      <input id="gAddr" placeholder="1240 Peachtree St NE, Apt 8B, Atlanta, GA 30309"/></div>
+    <div class="gbox">
+      <div class="gt">🎁 Make it a gift</div>
+      <div class="gs">We include your message and leave the receipt out of the box, so they never see what you paid.</div>
+    </div>
+    <div class="field"><label>Gift message (optional)</label>
+      <textarea id="gMsg" rows="2" placeholder="Happy birthday! Wish I could be there."></textarea></div>
+    <label class="chk"><input type="checkbox" id="gHide" checked /> Hide the receipt and price from the package</label>
+    <div class="field"><label>Arrive by (optional)</label><input id="gBy" placeholder="e.g. 12 August"/></div>
+    ` : `
     <div class="step" style="margin:16px 0 8px;">How should we get it to you?</div>
     ${CONFIG.delivery.map(d=>`
       <button class="opt ${d.id===selDelivery?"sel":""}" data-del="${d.id}">
         <span>${d.label}<br><span class="mono" style="font-size:10px;color:var(--mute);">${d.eta}</span></span>
         <span class="fee">${fmtN(d.fee)}</span>
       </button>`).join("")}
+    `}
 
-    <div class="step" style="margin:16px 0 8px;">Your details</div>
+    <div class="step" style="margin:16px 0 8px;">${gift ? "Your details (so we can update you)" : "Your details"}</div>
     <div class="row">
       <div class="field"><label>Full name</label><input id="fName" autocomplete="name" placeholder="Chioma Okafor"/></div>
       <div class="field"><label>WhatsApp number</label><input id="fPhone" class="mono" inputmode="tel" autocomplete="tel" placeholder="0803 000 0000"/></div>
     </div>
     <div class="row">
       <div class="field"><label>Email (for your receipt)</label><input id="fEmail" class="mono" type="email" autocomplete="email" placeholder="you@email.com"/></div>
-      <div class="field"><label>Delivery address or state</label><input id="fAddr" placeholder="e.g. 12 Okpara Ave, Enugu"/></div>
+      <div class="field"><label>${gift ? "Your city" : "Delivery address or state"}</label><input id="fAddr" placeholder="${gift ? "e.g. Lagos" : "e.g. 12 Okpara Ave, Enugu"}"/></div>
     </div>
     <div class="field">
       <label>Anything else we should know? (optional)</label>
@@ -743,10 +850,27 @@ function pay(){
   }
   err.style.display = "none";
 
-  const del = CONFIG.delivery.find(d => d.id === selDelivery);
+  const gift = mode === "gift";
+  let recipient = null;
+  if (gift) {
+    recipient = {
+      name:  $("gName").value.trim(),
+      phone: $("gPhone").value.trim(),
+      addr:  $("gAddr").value.trim(),
+      msg:   $("gMsg").value.trim(),
+      hide:  $("gHide").checked,
+      by:    $("gBy").value.trim(),
+    };
+    if (!recipient.name || !recipient.addr) {
+      err.textContent = "⚠ We need your recipient's name and US delivery address.";
+      err.style.display = "block"; return;
+    }
+  }
+  const del = gift ? { id:"gift", label:"Delivered to recipient in the U.S.", fee:0 }
+                   : CONFIG.delivery.find(d => d.id === selDelivery);
   const t = orderTotals(del.fee);
   orderRef = newRef();
-  const details = { name, phone, email, addr, note };
+  const details = { name, phone, email, addr, note, gift, recipient };
 
   if(!window.PaystackPop || CONFIG.paystackPublicKey.includes("REPLACE_ME")){
     err.innerHTML = "⚠ Payments switch on once your Paystack key is added in CONFIG.";
@@ -763,7 +887,8 @@ function pay(){
       custom_fields: [
         { display_name:"Order",    variable_name:"order_ref", value: orderRef },
         { display_name:"Customer", variable_name:"customer",  value: name + " · " + phone },
-        { display_name:"Deliver",  variable_name:"deliver",   value: del.label + " → " + addr },
+        { display_name:"Deliver",  variable_name:"deliver",
+          value: gift ? ("GIFT → " + recipient.name + ", " + recipient.addr) : (del.label + " → " + addr) },
       ]
     },
     callback: function(){ renderSuccess(details, t, del); },
@@ -785,25 +910,35 @@ function orderText(details, t, del){
     "Shipping to NG (" + t.totalKg.toFixed(1) + "kg): " + fmtN(t.intlN),
     "Service fee: " + fmtN(t.serviceN),
     "Duties: " + fmtN(t.dutiesN),
-    "Delivery: " + del.label + " — " + fmtN(del.fee),
+    "Delivery: " + del.label + (del.fee ? " — " + fmtN(del.fee) : ""),
     "*TOTAL PAID: " + fmtN(t.total) + "*","",
     "*" + details.name + "* · " + details.phone,
     details.email,
     details.addr,
     details.note ? "Order note: " + details.note : "",
-  ].filter(Boolean).join("\n");
+    details.gift ? "" : null,
+    details.gift ? "🎁 *GIFT — SHIP TO US ADDRESS*" : null,
+    details.gift ? "To: " + details.recipient.name + " · " + details.recipient.phone : null,
+    details.gift ? "Address: " + details.recipient.addr : null,
+    details.gift && details.recipient.msg ? "Message: \u201c" + details.recipient.msg + "\u201d" : null,
+    details.gift ? (details.recipient.hide ? "⚠ HIDE receipt & price in package" : "Receipt may be included") : null,
+    details.gift && details.recipient.by ? "Wants it by: " + details.recipient.by : null,
+  ].filter(function(x){ return x !== null && x !== undefined; }).join("\n");
 }
 
 function renderSuccess(details, t, del){
   const msg = orderText(details, t, del);
   $("modalBox").innerHTML = `
     <h3>Payment confirmed 🎉</h3>
-    <div class="sub">Order <strong class="mono">${orderRef}</strong> — we're buying your items now.</div>
+    <div class="sub">Order <strong class="mono">${orderRef}</strong> — ${details.gift
+      ? "we're buying and sending your gift now."
+      : "we're buying your items now."}</div>
     <div class="promise" style="color:var(--green);border-color:var(--green);">
       📌 Save your order number: <strong class="mono">${orderRef}</strong><br>Track it any time from the top of our site.
     </div>
     <div class="line"><span class="l">Total paid</span><span class="v">${fmtN(t.total)}</span></div>
-    <div class="line"><span class="l">Delivery</span><span class="v">${del.label}</span></div>
+    <div class="line"><span class="l">Delivery</span><span class="v">${esc(del.label)}</span></div>
+    ${details.gift ? `<div class="line"><span class="l">Recipient</span><span class="v">${esc(details.recipient.name)}</span></div>` : ""}
     <div class="line"><span class="l">Updates on WhatsApp</span><span class="v">${esc(details.phone)}</span></div>
     <p style="font-size:13px;color:var(--mute);margin-top:14px;line-height:1.55;">
       We'll message you at every step: purchase proof, a photo of your package in our US warehouse, the flight to Lagos, customs, then delivery.</p>
