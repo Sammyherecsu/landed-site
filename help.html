@@ -3,6 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<meta name="color-scheme" content="light" />
 <title>Help Center — Glavand</title>
 <meta name="description" content="Everything you need to know about shopping with Glavand — placing an order, pricing, shipping to Nigeria, delivery, returns and support." />
 
@@ -22,7 +23,7 @@ const HELP = {
 <link href="https://fonts.googleapis.com/css2?family=Sora:wght@500;600;700;800&family=Inter:wght@400;500;600&family=IBM+Plex+Mono:wght@400;500;600&display=swap" rel="stylesheet">
 
 <style>
-  :root{--green:#0B3D2E;--green-deep:#072A20;--paper:#F5F2EA;--yellow:#FFC93C;
+  :root{color-scheme:light;--green:#0B3D2E;--green-deep:#072A20;--paper:#F5F2EA;--yellow:#FFC93C;
         --ink:#141A17;--mute:#5E6B64;--line:#D9D4C7;--white:#fff;--save:#1E7A4F;}
   *{margin:0;padding:0;box-sizing:border-box;}
   body{font-family:'Inter',sans-serif;background:var(--paper);color:var(--ink);-webkit-font-smoothing:antialiased;}
@@ -34,7 +35,7 @@ const HELP = {
   header{background:var(--green);color:var(--paper);height:60px;display:flex;align-items:center;
          justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:50;}
   .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--paper);}
-  .logo-mark{width:28px;height:28px;display:block;}
+  .logo-mark{width:26px;height:26px;background:var(--yellow);border-radius:5px;display:grid;
              place-items:center;font-family:'Sora';font-weight:800;color:var(--green);font-size:15px;}
   .logo-name{font-family:'Sora';font-weight:700;font-size:18px;letter-spacing:-.02em;}
   .back{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;color:var(--paper);
@@ -99,7 +100,7 @@ const HELP = {
 
 <header>
   <a class="logo" href="/">
-   <img src="/glavand-logoupdate.svg.png" alt="" class="logo-mark" />
+    <div class="logo-mark">₦</div>
     <span class="logo-name" id="bn">Glavand</span>
   </a>
   <a class="back" href="/">← BACK TO SHOP</a>
