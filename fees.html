@@ -26,7 +26,7 @@ const FCONFIG = {
 const FEES = [
   { id:"wes",   icon:"📄", name:"WES evaluation",         note:"Credential evaluation for the US or Canada", usd:220, k:"wes world education services credential evaluation transcript canada" },
   { id:"sevis", icon:"🎓", name:"SEVIS I-901",            note:"Paid before your US visa interview",         usd:350, k:"sevis i901 i-901 student visa f1 j1 us immigration" },
-  { id:"app",   icon:"🏫", name:"University application",  note:"Application fee or admission deposit",       usd:75,  k:"university college application admission deposit school tuition" },
+  { id:"app",   icon:"🏫", name:"University application",  note:"Application fee or admission deposit",       usd:0,  k:"university college application admission deposit school tuition" },
   { id:"gre",   icon:"📝", name:"GRE",                     note:"Graduate Record Examination",                usd:220, k:"gre graduate record exam ets" },
   { id:"gmat",  icon:"📝", name:"GMAT",                    note:"Business school admissions test",            usd:275, k:"gmat business school mba exam" },
   { id:"ielts", icon:"🗣️", name:"IELTS",                   note:"English language test",                      usd:250, k:"ielts english test british council idp" },
@@ -34,13 +34,13 @@ const FEES = [
   { id:"duo",   icon:"🗣️", name:"Duolingo English Test",   note:"English language test",                      usd:65,  k:"duolingo det english test" },
   { id:"sat",   icon:"📝", name:"SAT",                     note:"Undergraduate admissions test",              usd:110, k:"sat college board undergraduate exam" },
   { id:"nclex", icon:"🩺", name:"NCLEX / CGFNS",           note:"Nursing licensure and credentialing",        usd:200, k:"nclex cgfns nursing nurse licensure credential" },
-  { id:"visa",   icon:"🛂", name:"Visa or immigration fee", note:"Application, biometrics or appointment fee",  usd:185, k:"visa immigration ds160 biometrics appointment government embassy consulate permit" },
+  { id:"visa",   icon:"🛂", name:"Visa or immigration fee", note:"Application, biometrics or appointment fee",  usd:0, k:"visa immigration ds160 biometrics appointment government embassy consulate permit" },
   { id:"flight", icon:"✈️", name:"Flight ticket",           note:"Any airline or booking site",                usd:0,   k:"flight ticket airline air travel booking plane fare emirates qatar turkish delta" },
   { id:"hotel",  icon:"🏨", name:"Hotel or accommodation",  note:"Bookings, deposits and reservations",        usd:0,   k:"hotel accommodation booking airbnb reservation lodging stay hostel" },
-  { id:"trans", icon:"📬", name:"Transcript request",       note:"From your school to an institution",         usd:50,  k:"transcript records school documents" },
-  { id:"exam",  icon:"📜", name:"Professional exam or body", note:"ACCA, CFA, PMP, membership dues",           usd:150, k:"acca cfa pmp cima professional membership dues certification" },
-  { id:"conf",  icon:"🎟️", name:"Conference registration",  note:"Academic or professional events",            usd:120, k:"conference registration event academic seminar" },
-  { id:"jrnl",  icon:"📚", name:"Journal publication fee",   note:"Article processing charges",                 usd:300, k:"journal publication apc article processing research" },
+  { id:"trans", icon:"📬", name:"Transcript request",       note:"From your school to an institution",         usd:0,  k:"transcript records school documents" },
+  { id:"exam",  icon:"📜", name:"Professional exam or body", note:"ACCA, CFA, PMP, membership dues",           usd:0, k:"acca cfa pmp cima professional membership dues certification" },
+  { id:"conf",  icon:"🎟️", name:"Conference registration",  note:"Academic or professional events",            usd:0, k:"conference registration event academic seminar" },
+  { id:"jrnl",  icon:"📚", name:"Journal publication fee",   note:"Article processing charges",                 usd:0, k:"journal publication apc article processing research" },
   { id:"soft",  icon:"💻", name:"Software or subscription",  note:"Tools you need for work or study",           usd:0,   k:"software subscription saas hosting domain cloud adobe" },
   { id:"other", icon:"➕", name:"Something else",            note:"Any official institution or portal",         usd:0,   k:"other custom another different" },
 ];
@@ -65,7 +65,7 @@ const FEES = [
   header{background:var(--green);color:var(--paper);height:60px;display:flex;align-items:center;
          justify-content:space-between;padding:0 20px;position:sticky;top:0;z-index:50;}
   .logo{display:flex;align-items:center;gap:10px;text-decoration:none;color:var(--paper);}
- .logo-mark{height:34px;width:auto;display:block;}
+  .logo-mark{width:28px;height:28px;display:block;}
   .logo-name{font-family:'Sora';font-weight:700;font-size:18px;letter-spacing:-.02em;}
   .flags{font-family:'IBM Plex Mono';font-size:11px;opacity:.7;margin-left:5px;}
   .back{font-family:'IBM Plex Mono';font-size:11px;letter-spacing:.1em;color:var(--paper);background:none;
@@ -104,6 +104,9 @@ const FEES = [
   .nores{padding:13px 15px;font-size:12.5px;color:var(--mute);line-height:1.55;
          border-bottom:1px solid var(--line);background:#FBFAF6;}
   .nores b{color:var(--green);}
+  .pbox{background:#FFF9E8;border:1px dashed var(--yellow);border-radius:11px;padding:14px 16px;margin:12px 0 14px;}
+  .pbox .pt{font-family:'Sora';font-weight:700;font-size:13px;color:var(--green);margin-bottom:4px;}
+  .pbox .ps{font-size:11.5px;color:var(--mute);line-height:1.55;}
   .waylede{font-size:12.5px;color:var(--mute);margin:-2px 0 10px;}
   .ways{display:grid;gap:8px;}
   .way{text-align:left;padding:12px 15px;border-radius:10px;border:2px solid var(--line);
@@ -120,6 +123,8 @@ const FEES = [
   .field input,.field textarea{width:100%;padding:13px 14px;font-size:15px;border:2px solid var(--line);
                border-radius:10px;background:var(--white);color:var(--ink);}
   .field input:focus,.field textarea:focus{border-color:var(--green);outline:none;}
+  .req{color:#C0392B;font-weight:700;}
+  .reqnote{font-size:11.5px;color:var(--mute);margin:-2px 0 12px;}
   .hint{font-size:11.5px;color:var(--mute);margin-top:5px;line-height:1.45;}
   .row{display:flex;gap:10px;flex-wrap:wrap;} .row>.field{flex:1 1 210px;}
 
@@ -191,7 +196,7 @@ const FEES = [
 
 <header>
   <a class="logo" href="/">
-    <img src="/glogo.svg.png" alt="" class="logo-mark" />
+    <img src="/glavand-logoupdate.svg.png" alt="" class="logo-mark" />
     <span class="logo-name">Glavand</span>
     <span class="flags">US → Nigeria</span>
   </a>
@@ -217,14 +222,15 @@ const FEES = [
     <div id="details" style="display:none;margin-top:20px;">
       <div class="step">2 · Payment details</div>
 
+      <div class="reqnote"><span class="req">*</span> Required. Everything else is helpful but optional.</div>
       <div class="row">
         <div class="field">
-          <label for="amtInput">Amount (USD)</label>
-          <input id="amtInput" class="mono" type="number" min="1" step="0.01" inputmode="decimal" placeholder="220.00" />
-          <div class="hint">Enter the exact amount requested, copied from the payment page.</div>
+          <label for="amtInput">Amount (USD) <span class="req">*</span></label>
+          <input id="amtInput" class="mono" type="text" inputmode="decimal" placeholder="220.00" />
+          <div class="hint" id="amtHint">Enter the exact amount requested, copied from the payment page.</div>
         </div>
         <div class="field" id="nameFieldWrap">
-          <label for="instInput">Who are we paying?</label>
+          <label for="instInput">Who are we paying? <span class="req">*</span></label>
           <input id="instInput" placeholder="e.g. World Education Services" />
         </div>
       </div>
@@ -236,20 +242,35 @@ const FEES = [
       </div>
 
       <div class="field">
-        <label for="linkInput">Payment page link (optional)</label>
+        <label for="linkInput">Payment page link</label>
         <input id="linkInput" class="mono" placeholder="https://…" inputmode="url" />
         <div class="hint">Helps us pay the right portal first time. You can also send it on WhatsApp.</div>
       </div>
 
       <div class="field">
-        <label for="deadInput">Deadline or travel date (optional)</label>
+        <label for="deadInput">Deadline or travel date</label>
         <input id="deadInput" placeholder="e.g. 15 August" />
       </div>
 
-      <div class="step" style="margin:20px 0 10px;">3 · How should we pay it?</div>
-      <div class="waylede">Most payments are completed without your login details.</div>
+      <div class="step" style="margin:20px 0 10px;">3 · How can we complete it? <span class="req">*</span></div>
+      <div class="waylede">Most payments go through without your login details.</div>
       <div class="ways" id="ways"></div>
       <div class="waynote" id="waynote"></div>
+
+      <div id="portalBox" style="display:none;">
+        <div class="pbox">
+          <div class="pt">🔐 Portal access</div>
+          <div class="ps">We use these once to make your payment and delete them straight after. We never store login details, and we recommend changing your password once the payment is confirmed.</div>
+        </div>
+        <div class="row">
+          <div class="field"><label for="pUser">Username or email</label>
+            <input id="pUser" autocomplete="off" placeholder="you@email.com" /></div>
+          <div class="field"><label for="pPass">Password</label>
+            <input id="pPass" type="password" autocomplete="off" placeholder="••••••••" /></div>
+        </div>
+        <div class="field"><label for="pNote">Anything else we need to reach the payment page?</label>
+          <input id="pNote" placeholder="e.g. security question answer, which tab the fee is under" /></div>
+      </div>
 
       <button class="btn" id="quoteBtn" style="margin-top:16px;">Show my total</button>
       <div class="err" id="err"></div>
@@ -356,18 +377,15 @@ $("helpWa").href = "https://wa.me/" + FCONFIG.whatsappNumber +
 
 // —— how we should pay ——
 const WAYS = [
-  { id:"ref",   t:"I have a reference number",
-    s:"We pay them directly using it. Nothing else needed.",
+  { id:"direct", t:"You can pay it directly",
+    s:"Using the reference or payment link above.",
     note:"" },
-  { id:"link",  t:"I have a payment link",
-    s:"Paste it above and we'll pay through it.",
-    note:"Make sure the link opens the payment page directly. If it asks you to sign in first, pick one of the options below instead." },
-  { id:"self",  t:"I'll complete the payment myself",
-    s:"We fund it, you click pay in your own account.",
+  { id:"self",   t:"I'll complete the payment myself",
+    s:"You fund it, I click pay in my own account.",
     note:"We'll message you on WhatsApp to arrange this, usually within minutes of your payment clearing." },
-  { id:"portal",t:"The portal needs a login to pay",
-    s:"Share access and we'll handle it end to end.",
-    note:"We'll request your login securely on WhatsApp once your payment clears, use it only for this payment, and delete it straight after. We recommend changing your password afterwards." },
+  { id:"portal", t:"The portal needs a login to pay",
+    s:"Share access and we'll handle it from start to finish.",
+    note:"" },
 ];
 
 let selWay = null;
@@ -384,6 +402,7 @@ $("ways").querySelectorAll("[data-way]").forEach(b => {
     const n = $("waynote");
     if (selWay.note) { n.textContent = selWay.note; n.style.display = "block"; }
     else n.style.display = "none";
+    $("portalBox").style.display = (selWay.id === "portal") ? "block" : "none";
   });
 });
 
@@ -425,7 +444,13 @@ function choose(f){
   $("pickedName").textContent = f.icon + "  " + f.name;
   $("details").style.display = "block";
   $("wb").style.display = "none";
-  if (f.usd) $("amtInput").value = f.usd; else $("amtInput").value = "";
+  if (f.usd) {
+    $("amtInput").value = f.usd;
+    $("amtHint").textContent = "This is the standard fee. Change it if your payment page shows a different amount.";
+  } else {
+    $("amtInput").value = "";
+    $("amtHint").textContent = "Enter the exact amount requested, copied from the payment page.";
+  }
   const prefill = ["other","app","visa","exam","conf","jrnl","soft","trans"].indexOf(f.id) === -1;
   $("instInput").value = prefill ? f.name : "";
   $("instInput").placeholder = f.id === "app" ? "e.g. University of Toronto"
@@ -475,12 +500,18 @@ $("quoteBtn").addEventListener("click", () => {
   if (!selFee) { err.textContent = "⚠ Tell us what you're paying for."; err.style.display="block"; return; }
   if (isNaN(usd) || usd <= 0) { err.textContent = "⚠ Enter the exact amount in USD from the payment page."; err.style.display="block"; return; }
   if (!inst) { err.textContent = "⚠ Tell us which institution or portal to pay."; err.style.display="block"; return; }
-  if (!ref)  { err.textContent = "⚠ Enter your reference, booking or candidate number."; err.style.display="block"; return; }
-  if (!selWay) { err.textContent = "⚠ Tell us how we should pay it."; err.style.display="block"; return; }
+  if (!selWay) { err.textContent = "⚠ Tell us how we can complete this payment."; err.style.display="block"; return; }
   err.style.display = "none";
 
   const q = calcFee(usd);
-  current = { fee:selFee, usd, inst, ref, way:selWay,
+  const portal = (selWay.id === "portal")
+    ? { user:$("pUser").value.trim(), pass:$("pPass").value, note:$("pNote").value.trim() }
+    : null;
+  if (portal && (!portal.user || !portal.pass)) {
+    err.textContent = "⚠ Add the username and password so we can reach the payment page.";
+    err.style.display = "block"; return;
+  }
+  current = { fee:selFee, usd, inst, ref, way:selWay, portal,
               link:$("linkInput").value.trim(), deadline:$("deadInput").value.trim(), q };
 
   $("wbType").textContent = selFee.name.toUpperCase();
@@ -583,6 +614,7 @@ function feeText(d){
     "Amount: " + fmtUSD(c.usd),
     "Their reference: " + c.ref,
     "How to pay: " + c.way.t,
+    c.portal ? "🔐 Portal access provided (sent separately)" : "",
     c.link ? "Portal: " + c.link : "",
     c.deadline ? "⏰ Deadline: " + c.deadline : "",
     "",
@@ -591,7 +623,12 @@ function feeText(d){
     "*TOTAL PAID: " + fmtN(c.q.total) + "*","",
     "*" + d.name + "* · " + d.phone,
     d.email,
-  ].filter(Boolean).join("\n");
+    c.portal ? "" : null,
+    c.portal ? "🔐 *PORTAL ACCESS*" : null,
+    c.portal ? "Username: " + c.portal.user : null,
+    c.portal ? "Password: " + c.portal.pass : null,
+    c.portal && c.portal.note ? "Note: " + c.portal.note : null,
+  ].filter(function(x){ return x !== null && x !== undefined && x !== ""; }).join("\n");
 }
 
 function renderDone(d){
@@ -606,6 +643,8 @@ function renderDone(d){
     <div class="line"><span class="l">Updates on WhatsApp</span><span class="v">${esc(d.phone)}</span></div>
     <p style="font-size:13px;color:var(--mute);margin-top:14px;line-height:1.55;">
       You'll receive confirmation once the payment has gone through, along with their receipt.</p>
+    ${current.portal ? `<div class="promise" style="color:var(--green);border-color:var(--green);">
+      🔐 Tap below to send your details. Your login goes to us on WhatsApp, and we delete it once the payment is confirmed.</div>` : ""}
     <button class="btn btn-yellow" style="width:100%;margin-top:14px;" id="waBtn">Send my details on WhatsApp →</button>
     <button class="btn" style="width:100%;margin-top:10px;" id="doneBtn">Done</button>
   `;
