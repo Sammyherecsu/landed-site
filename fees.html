@@ -4,8 +4,8 @@
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 <meta name="color-scheme" content="light" />
-<title>Make International Payments in Naira — Glavand</title>
-<meta name="description" content="Make international payments from Nigeria in naira — WES, SEVIS, GRE, IELTS, TOEFL, university applications, professional bodies and more. No dollar card needed. Full cost upfront, proof of payment sent to you." />
+<title>Make International Payments in Naira | Glavand</title>
+<meta name="description" content="Make international payments from Nigeria in naira. Flights, hotels, WES, SEVIS, GRE, IELTS, visa fees, university applications and more. No dollar card needed. Full cost upfront, proof of payment sent to you." />
 
 <script>
 // ╔══════════════════════════════════════════════════════════╗
@@ -101,6 +101,10 @@ const FEES = [
           border-radius:11px;padding:11px 14px;font-family:'Sora';font-weight:700;font-size:14px;
           color:var(--green);}
   .picked button{background:none;border:none;color:var(--mute);font-size:14px;padding:2px 4px;}
+  .nores{padding:13px 15px;font-size:12.5px;color:var(--mute);line-height:1.55;
+         border-bottom:1px solid var(--line);background:#FBFAF6;}
+  .nores b{color:var(--green);}
+  .waylede{font-size:12.5px;color:var(--mute);margin:-2px 0 10px;}
   .ways{display:grid;gap:8px;}
   .way{text-align:left;padding:12px 15px;border-radius:10px;border:2px solid var(--line);
        background:var(--white);font-size:13.5px;}
@@ -141,6 +145,11 @@ const FEES = [
 
   .promise{background:#F2FAF6;border:1px dashed var(--save);border-radius:10px;padding:11px 14px;
            font-size:12.5px;color:var(--save);line-height:1.55;margin:14px 0 4px;}
+  .why{background:#F2FAF6;border:1px solid #CBE6D8;border-radius:11px;padding:15px 17px;margin-top:18px;}
+  .why .wt{font-family:'Sora';font-weight:700;font-size:13.5px;color:var(--green);margin-bottom:8px;}
+  .why ul{list-style:none;display:grid;gap:6px;}
+  .why li{font-size:13px;color:var(--ink);padding-left:20px;position:relative;line-height:1.5;}
+  .why li:before{content:"✓";position:absolute;left:0;color:var(--save);font-weight:700;}
   .disclaimer{background:var(--white);border:1px solid var(--line);border-radius:10px;padding:14px 16px;
               font-size:12.5px;color:var(--mute);line-height:1.6;margin-top:22px;}
   .disclaimer b{color:var(--ink);}
@@ -164,7 +173,11 @@ const FEES = [
   details[open] summary::after{content:"−";}
   details p{padding:0 16px 15px;font-size:13px;color:var(--mute);line-height:1.6;}
 
-  footer{margin-top:56px;border-top:1px solid var(--line);padding-top:16px;
+  .needhelp{background:var(--white);border:1px solid var(--line);border-radius:11px;padding:16px 18px;
+            margin-top:40px;font-size:13.5px;color:var(--mute);line-height:1.6;}
+  .needhelp b{color:var(--ink);font-family:'Sora';}
+  .needhelp a{display:block;margin-top:7px;font-weight:600;}
+  footer{margin-top:36px;border-top:1px solid var(--line);padding-top:16px;
          font-family:'IBM Plex Mono';font-size:11px;color:var(--mute);}
 
   .overlay{position:fixed;inset:0;background:rgba(7,42,32,.55);display:none;z-index:70;overflow-y:auto;padding:24px 14px;}
@@ -187,13 +200,13 @@ const FEES = [
 
 <main>
   <h1>Make international<br>payments in naira.</h1>
-  <p class="lede">School fees, exams, visa payments, flights, hotels and more — we pay on your behalf and send you the receipt. No dollar card, no domiciliary account, no waiting on a friend abroad.</p>
+  <p class="lede">We pay universities, testing bodies, credential evaluators, airlines, hotels and official government portals on your behalf. No dollar card, no domiciliary account, no waiting on a friend abroad.</p>
   <p class="rate">Today's rate · <b>$1 = ₦<span id="rateChip"></span></b> · paid <span id="taround"></span> of confirmation</p>
 
   <section class="card">
-    <div class="step">1 · What are you paying for?</div>
+    <div class="step">1 · What would you like to pay?</div>
     <div class="searchwrap">
-      <input id="feeSearch" autocomplete="off" placeholder="Start typing — flight, hotel, WES, SEVIS, GRE, visa fee…" />
+      <input id="feeSearch" autocomplete="off" placeholder="Start typing: flight, hotel, WES, SEVIS, GRE, visa fee…" />
       <div class="sugg" id="sugg"></div>
     </div>
     <div class="picked" id="picked" style="display:none;">
@@ -202,13 +215,13 @@ const FEES = [
     </div>
 
     <div id="details" style="display:none;margin-top:20px;">
-      <div class="step">2 · The details</div>
+      <div class="step">2 · Payment details</div>
 
       <div class="row">
         <div class="field">
-          <label for="amtInput">Amount the institution charges (USD)</label>
+          <label for="amtInput">Amount (USD)</label>
           <input id="amtInput" class="mono" type="number" min="1" step="0.01" inputmode="decimal" placeholder="220.00" />
-          <div class="hint">Copy this exactly from the payment page — we pay the institution this amount.</div>
+          <div class="hint">Enter the exact amount requested, copied from the payment page.</div>
         </div>
         <div class="field" id="nameFieldWrap">
           <label for="instInput">Who are we paying?</label>
@@ -217,13 +230,13 @@ const FEES = [
       </div>
 
       <div class="field">
-        <label for="refInput">Your reference, booking or candidate number</label>
+        <label for="refInput">Reference number</label>
         <input id="refInput" class="mono" placeholder="e.g. WES ref 1234567 · SEVIS N00XXXXXXX · booking ABC123" />
-        <div class="hint">This is how they match the payment to you. Double-check it.</div>
+        <div class="hint">Application ID, candidate number, invoice or booking reference. Please check it carefully.</div>
       </div>
 
       <div class="field">
-        <label for="linkInput">Link to the payment page (optional)</label>
+        <label for="linkInput">Payment page link (optional)</label>
         <input id="linkInput" class="mono" placeholder="https://…" inputmode="url" />
         <div class="hint">Helps us pay the right portal first time. You can also send it on WhatsApp.</div>
       </div>
@@ -234,6 +247,7 @@ const FEES = [
       </div>
 
       <div class="step" style="margin:20px 0 10px;">3 · How should we pay it?</div>
+      <div class="waylede">Most payments are completed without your login details.</div>
       <div class="ways" id="ways"></div>
       <div class="waynote" id="waynote"></div>
 
@@ -266,50 +280,62 @@ const FEES = [
       <button class="btn-ghost" id="editBtn" style="margin-top:10px;">Change the amount or reference</button>
     </div>
 
-    <div class="promise">🔒 We only pay verified institutions, recognised merchants, airlines and official government portals — never a personal account or an informal payment instruction.</div>
+    <div class="why">
+      <div class="wt">Why Glavand</div>
+      <ul>
+        <li>Payments made directly to verified institutions, airlines and official portals</li>
+        <li>No domiciliary account or dollar card required</li>
+        <li>Transparent rate, shown before you pay</li>
+        <li>We pay within 24 hours of your payment clearing</li>
+      </ul>
+    </div>
   </section>
 
   <div class="disclaimer">
-    <b>Glavand facilitates payment only.</b> We do not influence application, admission, visa or examination outcomes, and we are not affiliated with any of the institutions listed. You remain responsible for the accuracy of the reference number and amount you give us.
+    <b>Important.</b> Glavand processes payments only. Admission decisions, examination results, visa approvals and institutional processes remain solely with the receiving organisation. Please make sure your reference number and amount are correct before you confirm.
   </div>
 
   <section class="how">
     <h2>How it works</h2>
     <div class="hg">
       <div class="hc"><div class="n">1</div><h4>Tell us the fee</h4>
-        <p>Pick the fee type, enter the exact amount and your reference number.</p></div>
+        <p>Tell us what you're paying, the exact amount, and your reference number.</p></div>
       <div class="hc"><div class="n">2</div><h4>Pay in naira</h4>
         <p>Card, bank transfer or USSD through Paystack. You see the total before you pay.</p></div>
       <div class="hc"><div class="n">3</div><h4>We verify and pay</h4>
-        <p>We confirm the portal is official, then pay the institution directly on your behalf.</p></div>
+        <p>We confirm the portal is official, then pay directly on your behalf.</p></div>
       <div class="hc"><div class="n">4</div><h4>You get the proof</h4>
-        <p>Receipt or confirmation from the institution, sent to you on WhatsApp and email.</p></div>
+        <p>Their receipt or confirmation, sent to you on WhatsApp and email.</p></div>
     </div>
   </section>
 
   <section class="faq">
     <h2>Straight answers</h2>
     <details><summary>Do I need a dollar card or domiciliary account?</summary>
-      <p>No. That's the whole point. You pay us in naira and we settle the institution in dollars.</p></details>
+      <p>No. That's the whole point. You pay us in naira and we settle them in dollars.</p></details>
     <details><summary>How long does it take?</summary>
-      <p>We pay <span id="taround2"></span> of your payment clearing, usually much sooner. If your deadline is tight, tell us and message us on WhatsApp so we can prioritise it.</p></details>
+      <p>We pay <span id="taround2"></span> of your payment clearing, usually much sooner. If your deadline is tight, message us on WhatsApp and we'll prioritise it.</p></details>
     <details><summary>What proof do I get?</summary>
-      <p>Whatever the institution issues — a payment receipt, confirmation email or portal screenshot showing your reference marked paid. We send it to you as soon as we have it.</p></details>
+      <p>Whatever they issue: a payment receipt, a confirmation email, or a portal screenshot showing your reference marked paid. We send it to you as soon as we have it.</p></details>
     <details><summary>Will you need my portal login?</summary>
-      <p>Usually not — most institutions let us pay directly with your reference number. Some portals only allow payment once signed in, and in those cases you can either complete the payment yourself with funds we provide, or share access and we'll handle it. We use it only for that payment and delete it afterwards.</p></details>
+      <p>Usually not. Most institutions let us pay directly with your reference number. Some portals only allow payment once signed in. In those cases you can either complete the payment yourself with funds we provide, or share access and we'll handle it. We use it only for that payment and delete it afterwards.</p></details>
     <details><summary>What if a flight fare or hotel rate changes before you pay?</summary>
-      <p>Fares move and rooms sell out. We check the price before paying — if it has gone up we message you with the new total and only proceed once you agree. If it has dropped, you pay less. If it's gone entirely, you get a full refund.</p></details>
+      <p>Fares move and rooms sell out. We check the price before paying. If it has gone up we message you with the new total and only proceed once you agree. If it has dropped, you pay less. If it has gone entirely, you get a full refund.</p></details>
     <details><summary>What if the payment fails or the portal rejects it?</summary>
-      <p>You get a full refund of the exact naira amount you paid, minus nothing. If it fails because the reference number was wrong, we'll ask you for the correct one and retry rather than refund, unless you'd rather have the money back.</p></details>
+      <p>You get back the exact naira amount you paid, with nothing deducted. If it failed because the reference number was wrong, we'll ask you for the correct one and retry, unless you'd rather have the money back.</p></details>
     <details><summary>Can you guarantee my admission, visa or exam result?</summary>
-      <p>No, and be wary of anyone who says otherwise. We move money to the institution and give you the receipt. Everything after that is between you and them.</p></details>
+      <p>No, and be wary of anyone who says otherwise. We move the money and give you the receipt. Everything after that is between you and them.</p></details>
     <details><summary>What fees can't you pay?</summary>
       <p>Anything going to a personal account, an unverifiable merchant, or a portal we can't independently confirm as official. If we can't verify it, we refund you in full rather than guess.</p></details>
     <details><summary>Why is your rate different from the official rate?</summary>
-      <p>Our rate includes the cost of sourcing dollars and moving them internationally. It's shown at the top of this page and in your total before you pay — there's nothing added afterwards.</p></details>
+      <p>Our rate includes the cost of sourcing dollars and moving them internationally. It's shown at the top of this page and in your total before you pay, with nothing added afterwards.</p></details>
   </section>
 
-  <footer>© <span id="yr"></span> Glavand · <a href="/">Shop US stores</a> · <a href="/help.html">Help Center</a> · Questions? WhatsApp us anytime</footer>
+  <div class="needhelp">
+    <b>Need help?</b> Our team is available if you have questions about your payment before you proceed.
+    <a href="#" id="helpWa">Message us on WhatsApp</a>
+  </div>
+  <footer>© <span id="yr"></span> Glavand · <a href="/">Shop US stores</a> · <a href="/help.html">Help Center</a></footer>
 </main>
 
 <div class="overlay" id="overlay"><div class="modal" id="modalBox"></div></div>
@@ -325,18 +351,20 @@ $("rateChip").textContent = rate.toLocaleString();
 $("taround").textContent = FCONFIG.turnaround;
 $("taround2").textContent = FCONFIG.turnaround;
 $("yr").textContent = new Date().getFullYear();
+$("helpWa").href = "https://wa.me/" + FCONFIG.whatsappNumber +
+  "?text=" + encodeURIComponent("Hi Glavand! I have a question about an international payment:");
 
 // —— how we should pay ——
 const WAYS = [
   { id:"ref",   t:"I have a reference number",
-    s:"We pay the institution directly using it. Nothing else needed.",
+    s:"We pay them directly using it. Nothing else needed.",
     note:"" },
   { id:"link",  t:"I have a payment link",
     s:"Paste it above and we'll pay through it.",
-    note:"Make sure the link opens the payment page directly — if it asks you to sign in first, pick one of the options below instead." },
+    note:"Make sure the link opens the payment page directly. If it asks you to sign in first, pick one of the options below instead." },
   { id:"self",  t:"I'll complete the payment myself",
     s:"We fund it, you click pay in your own account.",
-    note:"We'll message you on WhatsApp to arrange this — usually done within minutes of your payment clearing." },
+    note:"We'll message you on WhatsApp to arrange this, usually within minutes of your payment clearing." },
   { id:"portal",t:"The portal needs a login to pay",
     s:"Share access and we'll handle it end to end.",
     note:"We'll request your login securely on WhatsApp once your payment clears, use it only for this payment, and delete it straight after. We recommend changing your password afterwards." },
@@ -375,7 +403,10 @@ function matches(term){
 
 function drawSugg(list){
   const box = $("sugg");
-  box.innerHTML = list.map((f,i) => `
+  const onlyOther = list.length === 1 && list[0].id === "other";
+  box.innerHTML = (onlyOther ? `<div class="nores">Can't find what you're paying for?<br>
+      Choose <b>Something else</b> below and we'll take it from there.</div>` : "")
+    + list.map((f,i) => `
     <button class="sg ${i===hot?"hot":""}" data-fee="${f.id}">
       <span class="ic">${f.icon}</span>
       <span><span class="fn">${f.name}</span><span class="fnote">${f.note}</span></span>
@@ -456,8 +487,8 @@ $("quoteBtn").addEventListener("click", () => {
   $("wbName").textContent = inst;
   $("wbMeta").textContent = fmtUSD(usd) + " · ref " + ref;
   $("wbLines").innerHTML = [
-    ["Fee to the institution — " + fmtUSD(usd) + " × ₦" + rate.toLocaleString(), fmtN(q.feeN)],
-    ["Service fee — " + FCONFIG.feeServicePct + "%" + (q.svc === FCONFIG.feeMinNaira ? " (minimum)" : ""), fmtN(q.svc)],
+    ["Amount to be paid: " + fmtUSD(usd) + " at ₦" + rate.toLocaleString(), fmtN(q.feeN)],
+    ["Service fee, " + FCONFIG.feeServicePct + "%" + (q.svc === FCONFIG.feeMinNaira ? " (minimum)" : ""), fmtN(q.svc)],
   ].map(([l,v]) => `<div class="line"><span class="l">${esc(l)}</span><span class="v">${v}</span></div>`).join("");
   $("wbTotal").textContent = fmtN(q.total);
   $("wb").style.display = "block";
@@ -480,7 +511,7 @@ function renderCheckout(){
   const c = current;
   $("modalBox").innerHTML = `
     <h3>Confirm your payment</h3>
-    <div class="sub">Check the reference carefully — the institution uses it to match this payment to you.</div>
+    <div class="sub">Check the reference carefully. They use it to match this payment to you.</div>
     <div class="line"><span class="l">Paying</span><span class="v">${esc(c.inst)}</span></div>
     <div class="line"><span class="l">Amount</span><span class="v">${fmtUSD(c.usd)}</span></div>
     <div class="line"><span class="l">Your reference</span><span class="v">${esc(c.ref)}</span></div>
@@ -532,7 +563,7 @@ function pay(){
     currency: "NGN",
     ref: orderRef,
     metadata: { custom_fields: [
-      { display_name:"Payment",  variable_name:"payment",  value: c.fee.name + " — " + c.inst },
+      { display_name:"Payment",  variable_name:"payment",  value: c.fee.name + ": " + c.inst },
       { display_name:"Amount",   variable_name:"amount",   value: fmtUSD(c.usd) },
       { display_name:"Reference",variable_name:"their_ref",value: c.ref },
       { display_name:"Customer", variable_name:"customer", value: name + " · " + phone },
@@ -546,7 +577,7 @@ function pay(){
 function feeText(d){
   const c = current;
   return [
-    "🏛️ *FEE PAYMENT — " + orderRef + "* (PAID ✓)","",
+    "🏛️ *FEE PAYMENT: " + orderRef + "* (PAID ✓)","",
     "Type: " + c.fee.name,
     "Institution: " + c.inst,
     "Amount: " + fmtUSD(c.usd),
@@ -566,15 +597,15 @@ function feeText(d){
 function renderDone(d){
   const msg = feeText(d);
   $("modalBox").innerHTML = `
-    <h3>Payment confirmed 🎉</h3>
-    <div class="sub">Reference <strong class="mono">${orderRef}</strong> — we're paying ${esc(current.inst)} now.</div>
+    <h3>You're all set 🎉</h3>
+    <div class="sub">Reference <strong class="mono">${orderRef}</strong>. We'll submit your payment to ${esc(current.inst)} as soon as it's verified.</div>
     <div class="promise" style="color:var(--green);border-color:var(--green);">
       📌 Save this reference: <strong class="mono">${orderRef}</strong></div>
     <div class="line"><span class="l">Total paid</span><span class="v">${fmtN(current.q.total)}</span></div>
     <div class="line"><span class="l">Your reference with them</span><span class="v">${esc(current.ref)}</span></div>
     <div class="line"><span class="l">Updates on WhatsApp</span><span class="v">${esc(d.phone)}</span></div>
     <p style="font-size:13px;color:var(--mute);margin-top:14px;line-height:1.55;">
-      We pay ${esc(FCONFIG.turnaround)} and send you the institution's receipt or confirmation as soon as we have it.</p>
+      You'll receive confirmation once the payment has gone through, along with their receipt.</p>
     <button class="btn btn-yellow" style="width:100%;margin-top:14px;" id="waBtn">Send my details on WhatsApp →</button>
     <button class="btn" style="width:100%;margin-top:10px;" id="doneBtn">Done</button>
   `;
