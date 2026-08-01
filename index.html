@@ -50,7 +50,13 @@
   .door{background:var(--white);border:1px solid var(--line);border-radius:16px;padding:24px;
         display:flex;flex-direction:column;text-decoration:none;color:var(--ink);
         transition:border-color .15s, transform .15s;}
-  .door:hover{border-color:var(--green);transform:translateY(-2px);}
+  .door:hover,.door:focus-visible{background:var(--green);border-color:var(--green);
+       color:var(--paper);transform:translateY(-2px);}
+  .door:hover h2,.door:focus-visible h2{color:var(--paper);}
+  .door:hover p,.door:hover .meta,.door:focus-visible p,.door:focus-visible .meta{color:rgba(245,242,234,.8);}
+  .door:hover .go,.door:focus-visible .go{color:var(--yellow);}
+  .door:active{transform:translateY(0);}
+  .door.main:hover{background:var(--green-deep);}
   .door .ic{font-size:24px;margin-bottom:12px;}
   .door h2{font-family:'Sora';font-weight:800;font-size:19px;letter-spacing:-.02em;
            color:var(--green);line-height:1.25;}
@@ -137,7 +143,7 @@
       <span class="go">Get a quote &rarr;</span>
     </a>
 
-    <a class="door" href="/shop.html?mode=gift">
+    <a class="door" href="/gift.html">
       <span class="ic">🎁</span>
       <h2>Send a gift to someone in the US</h2>
       <p>Buy from any American store and have it delivered straight to their door in the States. We add your message and leave the receipt out of the box. Arrives in three to five days, with no customs or duties to worry about.</p>
@@ -214,7 +220,7 @@
   <footer>
     © <span id="yr"></span> Glavand · Beyond borders<br>
     <a href="/shop.html">Shop US stores</a> ·
-    <a href="/shop.html?mode=gift">Send a gift to the US</a> ·
+    <a href="/gift.html">Send a gift to the US</a> ·
     <a href="/fees.html">International payments</a> ·
     <a href="/help.html">Help Center</a> ·
     <a href="/help.html#shipping">Shipping</a> ·
