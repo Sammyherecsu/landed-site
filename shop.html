@@ -238,7 +238,7 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
 <body>
 
 <header>
-  <div class="logo"><img src="/glavand-logoupdate.svg.png" alt="" class="logo-mark" /><span class="logo-name" id="brandName">Glavand</span><span class="flags">US → Nigeria</span></div>
+  <a class="logo" href="/" style="text-decoration:none;color:var(--paper);"><img src="/glavand-logoupdate.svg.png" alt="Glavand" class="logo-mark" /><span class="logo-name" id="brandName">Glavand</span><span class="flags">US → Nigeria</span></a>
   <div class="hdr-right">
     <div class="rate-chip"><span class="rl">Today's rate</span>$1 = ₦<span id="rateChip"></span></div>
     <a href="/" class="track-link" style="text-decoration:none;">HOME</a>
@@ -260,12 +260,6 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
       <span class="pill pill-any">+ any US store</span>
     </div>
   </section>
-
-  <div class="modes" id="modes">
-    <button class="on" data-mode="ng">Ship to Nigeria</button>
-    <button data-mode="gift">🎁 Gift someone in the U.S.</button>
-  </div>
-  <div class="modenote" id="modenote">⚠ Finish or clear your current order before switching.</div>
 
   <!-- ————— QUOTE BUILDER ————— -->
   <section class="calc">
@@ -397,11 +391,11 @@ const KNOWN_STORES = ["amazon","ebay","walmart","target","ulta","shein","nike","
       <div class="how-card"><div class="n">3</div><h4>One box to Nigeria</h4>
         <p>Your items are packed into one box at our US warehouse. We send you a photo, then fly it to Lagos with duties already paid.</p></div>
       <div class="how-card"><div class="n">4</div><h4>Pickup or doorstep</h4>
-        <p>Collect at a partner branch anywhere in Nigeria, or have it delivered. WhatsApp updates at every step.</p></div>
+        <p>Collect at a partner branch anywhere in Nigeria, or have it delivered to your address. WhatsApp updates at every step.</p></div>
     </div>
   </section>
 
-  <footer>© <span id="yr"></span> <span id="brandFoot">Glavand</span> · <a href="/fees.html">International payments</a> · <a href="/help.html">Help Center</a> · <a href="/help.html#shipping">Shipping</a> · <a href="/help.html#returns">Returns</a> · Questions? WhatsApp us anytime</footer>
+  <footer>© <span id="yr"></span> <span id="brandFoot">Glavand</span> · <a href="/fees.html">International payments</a> · <a href="/gift.html">Send a gift</a> · <a href="/fees.html">International payments</a> · <a href="/help.html">Help Center</a> · <a href="/help.html#shipping">Shipping</a> · <a href="/help.html#returns">Returns</a> · Questions? WhatsApp us anytime</footer>
 </main>
 
 <!-- ————— CART BAR ————— -->
@@ -429,51 +423,7 @@ $("brandName").textContent = CONFIG.brandName;
 $("brandFoot").textContent = CONFIG.brandName;
 
 
-// —— mode: 'ng' (main business) or 'gift' (send to a US address) ——
-let mode = "ng";
-
-$("modes").querySelectorAll("[data-mode]").forEach(btn => {
-  btn.addEventListener("click", () => {
-    const want = btn.dataset.mode;
-    if (want === mode) return;
-    if (cart.length) {                       // one order = one mode
-      $("modenote").style.display = "block";
-      setTimeout(() => { $("modenote").style.display = "none"; }, 4000);
-      return;
-    }
-    mode = want;
-    $("modes").querySelectorAll("button").forEach(b => b.classList.remove("on"));
-    btn.classList.add("on");
-    applyMode();
-  });
-});
-
-function applyMode(){
-  const gift = mode === "gift";
-  $("sizeBlock").style.display = gift ? "none" : "block";
-  $("heroSub").textContent = gift
-    ? "Buy from any US store and send it straight to their door in the States. Pay in naira, arrives in " + CONFIG.giftEta + "."
-    : "Paste any product link and see your total landed cost in naira before you pay. Shipping, fees and import charges all included.";
-  // reset the builder
-  selBand = null; qty = 1; renderQty();
-  $("bands").querySelectorAll(".band").forEach(x => x.classList.remove("sel"));
-  $("waybill").style.display = "none";
-  $("detailsBlock").style.display = "none";
-  $("priceRow").style.display = "none";
-  $("startBtn").style.display = "inline-block";
-  $("oversized").style.display = "none";
-  $("quoteBtn").style.display = "inline-block";
-  $("linkInput").value = ""; $("priceInput").value = ""; $("usShipInput").value = "";
-  $("itemNote").value = "";
-}
-
-// arrive from the homepage gift card with the right mode already on
-(function(){
-  if (location.search.indexOf("mode=gift") !== -1) {
-    const b = $("modes").querySelector('[data-mode="gift"]');
-    if (b) b.click();
-  }
-})();
+const mode = "ng";
 
 // —— render weight bands ——
 let selBand = null;
@@ -738,9 +688,9 @@ function renderCartBar(){
   const t = orderTotals(0);
   const units = cart.reduce((s,c)=>s+c.qty,0);
   $("cbKg").textContent = t.totalKg.toFixed(1);
-  $("cbCount").textContent = units + " item" + (units>1?"s":"") + (mode==="gift" ? " · gift to the U.S." : "");
-  $("cbTotal").textContent = fmtN(t.total) + (mode==="gift" ? "" : " + delivery");
-  $("cbKgWrap").style.display = (mode==="gift") ? "none" : "inline";
+  $("cbCount").textContent = units + " item" + (units>1?"s":"");
+  $("cbTotal").textContent = fmtN(t.total) + " + delivery";
+  
   bar.classList.add("on");
 }
 
